@@ -1,6 +1,11 @@
 {
-  "generated_at": "2026-10-05T17:08:01.303734-04:00",
+  "generated_at": "2026-10-05T17:20:11.940268-04:00",
   "headlines": [
+    {
+      "title": "Knicks star Towns not expecting extension soon",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/nba/article/knicks-star-towns-not-expecting-extension-soon-n1-50110415/"
+    },
     {
       "title": "Report: Chiefs WR Thornton expected back in 12-16 weeks",
       "source": "TSN",
@@ -20,12 +25,7 @@
       "title": "NBA Schedule on TSN",
       "source": "TSN",
       "url": "https://www.tsn.ca/nba/article/nba-us-games-broadcast-schedule-on-tsn/"
-    },
-    {
-      "title": "WNBA on TSN Schedule",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/wnba/article/2025-wnba-on-tsn-schedule-2/"
     }
   ],
-  "ticker": "SPORTS: Report: Chiefs WR Thornton expected back in 12-16 weeks | NFL suspends official Seeman two games, referee Hill one game for unp... | Steelers place DT Harmon on injured reserve, sign CB Murphy-Bunting | NBA Schedule on TSN | WNBA on TSN Schedule | "
+  "ticker": "SPORTS: Knicks star Towns not expecting extension soon | Report: Chiefs WR Thornton expected back in 12-16 weeks | NFL suspends official Seeman two games, referee Hill one game for unp... | Steelers place DT Harmon on injured reserve, sign CB Murphy-Bunting | NBA Schedule on TSN | "
 }
