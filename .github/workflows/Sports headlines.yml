@@ -1,0 +1,22 @@
+ - name: Build Headlines JSON
+      run: |
+        echo "Building sports_headlines.json..."
+
+        jq -n \
+        --arg leafs "$(jq -r '[.items[].headline] | .[:5] | @json' leafs_news.json 2>/dev/null)" \
+        --arg raptors "$(jq -r '[.articles[].headline] | .[:5] | @json' raptors_news.json 2>/dev/null)" \
+        --arg jays "$(jq -r '[.articles[].headline] | .[:5] | @json' jays_news.json 2>/dev/null)" \
+        --arg tfc "$(jq -r '[.articles[].headline] | .[:5] | @json' tfc_news.json 2>/dev/null)" \
+        --arg argos "$(jq -r '[.articles[].headline] | .[:5] | @json' argos_news.json 2>/dev/null)" \
+        '
+        {
+          leafs_headlines: ( $leafs | fromjson? // [] ),
+          raptors_headlines: ( $raptors | fromjson? // [] ),
+          jays_headlines: ( $jays | fromjson? // [] ),
+          tfc_headlines: ( $tfc | fromjson? // [] ),
+          argos_headlines: ( $argos | fromjson? // [] )
+        }
+        ' > sports_headlines.json
+
+        echo "sports_headlines.json created:"
+        cat sports_headlines.json
