@@ -1,6 +1,6 @@
  - name: Build Headlines JSON
       run: |
-        echo "Building sports_headlines.json..."
+        echo "Building sports-headlines.json..."
 
         jq -n \
         --arg leafs "$(jq -r '[.items[].headline] | .[:5] | @json' leafs_news.json 2>/dev/null)" \
