@@ -1,34 +1,22 @@
 name: Update Toronto JSON
 
 on:
-  # GitHub minimum cron interval is 5 minutes
   schedule:
     - cron: "*/5 * * * *"
-
-  # Allows external 1‑minute trigger via repository_dispatch
   repository_dispatch:
     types: [update-json]
-
-  # Manual trigger from Actions tab
   workflow_dispatch:
 
 permissions:
   contents: write
 
-concurrency:
-  group: update-toronto-json
-  cancel-in-progress: false
-
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -36,8 +24,7 @@ jobs:
           python-version: "3.12"
 
       - name: Build toronto.json
-        run: |
-          python3 scripts/build_toronto_json.py
+        run: python3 scripts/build_toronto_json.py
 
       - name: Commit & push if changed
         run: |
@@ -49,7 +36,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes — nothing to commit."
           else
-            git commit -m "auto: update toronto.json [$(date -u +'%Y-%m-%dT%H:%M:%SZ')]"
+            git commit -m "auto: update toronto.json"
             git pull --rebase --autostash
             git push
           fi
