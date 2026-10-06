@@ -1,20 +1,21 @@
 {
-  "leafs": "string",
-  "leafs_next_utc": "string",
-  "leafs_standings": "string",
-  "leafs_news": "string",
-
-  "jays": "string",
-  "jays_next_utc": "string",
-  "jays_standings": "string",
-  "jays_news": "string",
-
-  "raptors_news": "string",
-
-  "news": "string",
-
-  "sports_ticker": "string",
-  "sports_headlines": ["string", "string", "string", "string", "string"],
-
-  "generated_at": "ISO8601 timestamp"
+  "leafs": "LEAFS: Sacramento Kings 83 @ Brooklyn Nets 115 FINAL | ",
+  "leafs_next_utc": "2026-10-06T23:00:00Z",
+  "leafs_standings": "LEAFS STANDINGS: NO DATA | ",
+  "leafs_news": "LEAFS NEWS: No updates available | ",
+  "jays": "BLUE JAYS: Afogados 5 @ Icasa 2 FINAL | ",
+  "jays_next_utc": "",
+  "jays_standings": "JAYS STANDINGS: NO DATA | ",
+  "jays_news": "JAYS NEWS: No updates available | ",
+  "raptors_news": "RAPTORS NEWS: No updates available | ",
+  "news": "TORONTO NEWS: No updates available | ",
+  "sports_ticker": "SPORTS: Leafs preparing for next matchup | Jays rotation expected to shift | Raptors evaluating roster changes | Toronto FC training intensifies | CFL East standings tighten | ",
+  "sports_headlines": [
+    "Leafs preparing for next matchup",
+    "Jays rotation expected to shift",
+    "Raptors evaluating roster changes",
+    "Toronto FC training intensifies",
+    "CFL East standings tighten"
+  ],
+  "generated_at": "2026-10-06T00:44:31.540451+00:00"
 }
