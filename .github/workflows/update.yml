@@ -40,5 +40,11 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Auto-update Toronto live sports data"
+            # If something else pushed to main in between (a manual edit,
+            # another run), rebase onto it before pushing rather than failing
+            # outright. These three files are fully regenerated every run, so
+            # if the rebase hits a conflict on them specifically, this run's
+            # freshly-generated version wins automatically (-X ours).
+            git pull --rebase -X ours origin main
             git push
           fi
