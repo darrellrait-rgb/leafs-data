@@ -50,9 +50,9 @@ TSN_NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9",
 SPORTS_HEADLINES_COUNT = 5
 TSN_SITEMAP_BASE  = "https://www.tsn.ca/arc/outboundfeeds/sitemap-news"
 CP24_SITEMAP_BASE = "https://www.cp24.com/arc/outboundfeeds/sitemap-news"
-LEAFS_KEYWORDS     = ["leafs", "maple leafs"]
-RAPTORS_KEYWORDS   = ["raptors"]
-JAYS_KEYWORDS      = ["blue jays", "jays"]
+LEAFS_KEYWORDS     = ["leafs", "maple leafs", "toronto Maple Leafs"]
+RAPTORS_KEYWORDS   = ["raptors", "raps", "Toronto Raptors"]
+JAYS_KEYWORDS      = ["blue jays", "jays", "toronto blue jays"]
 
 
 ERRORS = []   # fetch failures, written to debug.json
