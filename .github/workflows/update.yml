@@ -1,44 +1,55 @@
-name: Update Leafs, Jays & Raptors Live Data
+name: Update Toronto JSON
 
 on:
+  # GitHub minimum cron interval is 5 minutes
   schedule:
-    # 5 minutes is the practical floor for GitHub's scheduler - shorter
-    # intervals get silently dropped/delayed under load. This is the real
-    # bottleneck for how fresh Leafs/Jays scores can be, regardless of how
-    # often the device itself polls leafs.json.
     - cron: "*/5 * * * *"
+
+  # Allows external 1‑minute trigger via repository_dispatch
+  repository_dispatch:
+    types: [update-json]
+
+  # Manual trigger from Actions tab
   workflow_dispatch:
 
-# Lets the workflow push leafs.json back to the repo
 permissions:
   contents: write
 
 concurrency:
-  group: update-ticker
-  cancel-in-progress: true
+  group: update-toronto-json
+  cancel-in-progress: false
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - name: Build leafs.json
-        env:
-          # Optional: only needed if you still want a GitHub-side Raptors fallback.
-          # Settings > Secrets and variables > Actions > New repository secret
-          BDL_KEY: ${{ secrets.BDL_KEY }}
-        run: python3 update_ticker.py
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-      - name: Commit updated JSON
+      - name: Build toronto.json
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@users.noreply.github.com"
-          git add leafs.json debug.json sports_headlines.json
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
+          python3 scripts/build_toronto_json.py
+
+      - name: Commit & push if changed
+        run: |
+          git config user.name "toronto-json-bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          git add toronto.json
+
+          if git diff --cached --quiet; then
+            echo "No changes — nothing to commit."
           else
-            git commit -m "Auto-update Toronto live sports data"
+            git commit -m "auto: update toronto.json [$(date -u +'%Y-%m-%dT%H:%M:%SZ')]"
+            git pull --rebase --autostash
             git push
           fi
