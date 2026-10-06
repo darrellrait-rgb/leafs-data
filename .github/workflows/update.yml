@@ -1,0 +1,44 @@
+name: Update Leafs, Jays & Raptors Live Data
+
+on:
+  schedule:
+    # 5 minutes is the practical floor for GitHub's scheduler - shorter
+    # intervals get silently dropped/delayed under load. This is the real
+    # bottleneck for how fresh Leafs/Jays scores can be, regardless of how
+    # often the device itself polls leafs.json.
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+# Lets the workflow push leafs.json back to the repo
+permissions:
+  contents: write
+
+concurrency:
+  group: update-ticker
+  cancel-in-progress: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build leafs.json
+        env:
+          # Optional: only needed if you still want a GitHub-side Raptors fallback.
+          # Settings > Secrets and variables > Actions > New repository secret
+          BDL_KEY: ${{ secrets.BDL_KEY }}
+        run: python3 update_ticker.py
+
+      - name: Commit updated JSON
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add leafs.json debug.json sports_headlines.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto-update Toronto live sports data"
+            git push
+          fi
