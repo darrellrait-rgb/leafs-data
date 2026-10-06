@@ -1,0 +1,20 @@
+{
+  "leafs": "string",
+  "leafs_next_utc": "string",
+  "leafs_standings": "string",
+  "leafs_news": "string",
+
+  "jays": "string",
+  "jays_next_utc": "string",
+  "jays_standings": "string",
+  "jays_news": "string",
+
+  "raptors_news": "string",
+
+  "news": "string",
+
+  "sports_ticker": "string",
+  "sports_headlines": ["string", "string", "string", "string", "string"],
+
+  "generated_at": "ISO8601 timestamp"
+}
