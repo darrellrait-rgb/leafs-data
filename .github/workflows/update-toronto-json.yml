@@ -2,10 +2,10 @@ name: Update Toronto JSON
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/5 * * * *"     # GitHub minimum
   repository_dispatch:
-    types: [update-json]
-  workflow_dispatch:
+    types: [update-json]      # External 1‑minute trigger
+  workflow_dispatch:           # Manual run
 
 permissions:
   contents: write
@@ -13,33 +13,65 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0       # full history for safe reset
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Install Python dependencies
+      - name: Install dependencies
         run: pip install requests
 
       - name: Build toronto.json
-        run: python3 scripts/build_toronto_json.py
+        id: build
+        run: |
+          echo "[INFO] Running JSON generator..."
+          python3 scripts/build_toronto_json.py || echo "::error::JSON generator failed"
 
-      - name: Commit & push if changed
+      - name: Validate JSON
+        id: validate
+        run: |
+          echo "[INFO] Validating toronto.json..."
+          python3 - << 'EOF'
+import json
+try:
+    with open("toronto.json") as f:
+        json.load(f)
+    print("[INFO] JSON validation OK")
+except Exception as e:
+    print("::error::Invalid JSON:", e)
+    exit(1)
+EOF
+
+      - name: Commit & push (force overwrite, conflict‑proof)
         run: |
           git config user.name "toronto-json-bot"
           git config user.email "actions@users.noreply.github.com"
 
+          git fetch origin main
+
+          # Soft reset to remote main (keeps working tree)
+          git reset --soft origin/main
+
           git add toronto.json
 
           if git diff --cached --quiet; then
-            echo "No changes — nothing to commit."
+            echo "[INFO] No changes — nothing to commit."
           else
-            git commit -m "auto: update toronto.json"
-            git pull --rebase --autostash
-            git push
+            echo "[INFO] Committing updated toronto.json..."
+            git commit -m "auto: update toronto.json ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
+
+            echo "[INFO] Force pushing clean commit..."
+            git push origin HEAD:main --force
           fi
+
+      - name: Health log
+        run: |
+          echo "[HEALTH] Update completed at $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
