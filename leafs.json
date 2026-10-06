@@ -1,21 +1,12 @@
 {
-  "leafs": "LEAFS: Sacramento Kings 83 @ Brooklyn Nets 115 FINAL | ",
+  "leafs": "LEAFS NEXT: NSH @ TOR 10/06 7:00PM | LAST: OTT 3 @ TOR 2 | ",
   "leafs_next_utc": "2026-10-06T23:00:00Z",
-  "leafs_standings": "LEAFS STANDINGS: NO DATA | ",
-  "leafs_news": "LEAFS NEWS: No updates available | ",
-  "jays": "BLUE JAYS: Afogados 5 @ Icasa 2 FINAL | ",
+  "jays": "BLUE JAYS: NO GAMES | ",
   "jays_next_utc": "",
-  "jays_standings": "JAYS STANDINGS: NO DATA | ",
-  "jays_news": "JAYS NEWS: No updates available | ",
-  "raptors_news": "RAPTORS NEWS: No updates available | ",
-  "news": "TORONTO NEWS: No updates available | ",
-  "sports_ticker": "SPORTS: Leafs preparing for next matchup | Jays rotation expected to shift | Raptors evaluating roster changes | Toronto FC training intensifies | CFL East standings tighten | ",
-  "sports_headlines": [
-    "Leafs preparing for next matchup",
-    "Jays rotation expected to shift",
-    "Raptors evaluating roster changes",
-    "Toronto FC training intensifies",
-    "CFL East standings tighten"
-  ],
-  "generated_at": "2026-10-06T00:44:31.540451+00:00"
+  "leafs_standings": "LEAFS 7TH ATLANTIC 1-2-0 2PTS | ",
+  "jays_standings": "JAYS 5TH AL EAST 79-83 GB 19.0 WC 6TH 5.0GB | ",
+  "news": "NEWS: Toronto police identify man murdered in North York; suspect at-large | Tennessee Republicans consider more execution options after Christa P... | ",
+  "leafs_news": "LEAFS NEWS: Claude Giroux: Need to keep same approach from win over Leafs | Dreger on the Leafs' start to the season, why the Leafs need to be pa... | ",
+  "raptors_news": "RAPTORS NEWS: Raptors sign F Degenhart, waive G Jackson Jr. | 2026-27 Raptors on TSN Schedule | ",
+  "jays_news": "JAYS NEWS: No updates available | "
 }
