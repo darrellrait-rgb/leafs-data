@@ -217,6 +217,40 @@ def get_sports_ticker(headlines):
     return ascii_only("SPORTS: " + " | ".join(headlines) + " | ")
 
 # -----------------------------------------------------
+# Feed Health Block
+# -----------------------------------------------------
+
+def component_status(value, empty_value):
+    if value == empty_value:
+        return "ERROR"
+    if value.strip() == "":
+        return "DEGRADED"
+    return "OK"
+
+health = {
+    "status": "OK",  # will be updated below
+    "last_update_utc": datetime.now(timezone.utc).isoformat(),
+    "version": "2026-10-05",
+    "components": {
+        "leafs":   component_status(leafs_text, "LEAFS: NO DATA | "),
+        "jays":    component_status(jays_text, "BLUE JAYS: NO DATA | "),
+        "raptors": component_status(raptors_news, "RAPTORS NEWS: No updates available | "),
+        "weather": "OK" if weatherText.strip() != "" else "DEGRADED",
+        "news":    component_status(toronto_news, "TORONTO NEWS: No updates available | "),
+        "sports":  "OK" if len(headlines) > 0 else "ERROR"
+    },
+    "message": "All systems operational"
+}
+
+# Determine overall status
+if "ERROR" in health["components"].values():
+    health["status"] = "ERROR"
+    health["message"] = "One or more feeds failed"
+elif "DEGRADED" in health["components"].values():
+    health["status"] = "DEGRADED"
+    health["message"] = "Some feeds are degraded"
+
+# -----------------------------------------------------
 # Build unified JSON
 # -----------------------------------------------------
 
@@ -247,6 +281,7 @@ def main():
 
         "sports_ticker": endbar(sports_ticker),
         "sports_headlines": headlines,
+        "feed_health": health
 
         "generated_at": datetime.now(timezone.utc).isoformat()
     }
