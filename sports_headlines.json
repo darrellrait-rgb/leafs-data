@@ -1,10 +1,20 @@
 {
-  "generated_at": "2026-10-07T19:35:02.069794-04:00",
+  "generated_at": "2026-10-07T19:40:37.508815-04:00",
   "headlines": [
     {
       "title": "Buss siblings formally file case against Jeanie over Lakers sale",
       "source": "TSN",
       "url": "https://www.tsn.ca/nba/article/buss-siblings-formally-file-case-against-jeanie-over-lakers-sale-n1-50128244/"
+    },
+    {
+      "title": "Steelers QB Rodgers downplays heated exchange with coach McCarthy",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/nfl/article/steelers-qb-rodgers-downplays-heated-exchange-with-coach-mccarthy-n1-50127513/"
+    },
+    {
+      "title": "Vikings' Jefferson says plan is to play vs. Saints",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/nfl/article/vikings-jefferson-says-plan-is-to-play-vs-saints-n1-50128245/"
     },
     {
       "title": "Miller back with Padres for Game 4 of NLDS after paternity absence",
@@ -15,17 +25,7 @@
       "title": "RBI triples from Adell, Ramirez help Guardians stay alive with win ov...",
       "source": "TSN",
       "url": "https://www.tsn.ca/wires/article/follow-live-white-sox-look-to-close-out-guardians-in-alds/"
-    },
-    {
-      "title": "Bengals' WR Chase (concussion), Higgins (adductor) miss practice Wedn...",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/nfl/article/bengals-wr-chase-concussion-higgins-adductor-deal-with-injuries/"
-    },
-    {
-      "title": "Islanders D Romanov out 6-8 months with torn ACL in right knee",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/nhl/article/islanders-defenseman-romanov-is-out-6-8-months-with-a-torn-acl-in-his-right-knee/"
     }
   ],
-  "ticker": "SPORTS: Buss siblings formally file case against Jeanie over Lakers sale | Miller back with Padres for Game 4 of NLDS after paternity absence | RBI triples from Adell, Ramirez help Guardians stay alive with win ov... | Bengals' WR Chase (concussion), Higgins (adductor) miss practice Wedn... | Islanders D Romanov out 6-8 months with torn ACL in right knee | "
+  "ticker": "SPORTS: Buss siblings formally file case against Jeanie over Lakers sale | Steelers QB Rodgers downplays heated exchange with coach McCarthy | Vikings' Jefferson says plan is to play vs. Saints | Miller back with Padres for Game 4 of NLDS after paternity absence | RBI triples from Adell, Ramirez help Guardians stay alive with win ov... | "
 }
