@@ -1,20 +1,10 @@
 {
-  "generated_at": "2026-10-06T20:05:20.367023-04:00",
+  "generated_at": "2026-10-06T20:39:18.241656-04:00",
   "headlines": [
-    {
-      "title": "Larkin scores in season debut with Red Wings",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/nhl/article/larkin-scores-in-season-debut-with-red-wings/"
-    },
     {
       "title": "Lions release Hagerty following completion of suspension",
       "source": "TSN",
       "url": "https://www.tsn.ca/cfl/article/lions-release-hagerty-following-completion-of-suspension/"
-    },
-    {
-      "title": "Argentina bids Messi farewell in final national team match, ending an...",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/soccer/article/argentina-bids-messi-farewell-in-final-national-team-match-ending-an-era/"
     },
     {
       "title": "Insider Trading: Panthers breathe sigh of relief on Barkov",
@@ -25,7 +15,17 @@
       "title": "Collier faces a big decision about returning to the Lynx as WNBA free...",
       "source": "TSN",
       "url": "https://www.tsn.ca/wnba/article/collier-faces-a-big-decision-about-returning-to-the-lynx-as-wnba-free-agency-awaits/"
+    },
+    {
+      "title": "Merino comes up clutch again for Spain as Kane marks record-setting m...",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/soccer/article/merino-comes-up-clutch-again-for-spain-as-kane-marks-record-setting-match-with-two-goals-for-england/"
+    },
+    {
+      "title": "Dreger on the Red Wings' franchise turmoil, how Leafs are handling Mc...",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/radio/toronto-1050/article/dreger-on-the-red-wings-franchise-turmoil-how-leafs-are-handling-mckenna-and-the-impact-of-barkovs-injury/"
     }
   ],
-  "ticker": "SPORTS: Larkin scores in season debut with Red Wings | Lions release Hagerty following completion of suspension | Argentina bids Messi farewell in final national team match, ending an... | Insider Trading: Panthers breathe sigh of relief on Barkov | Collier faces a big decision about returning to the Lynx as WNBA free... | "
+  "ticker": "SPORTS: Lions release Hagerty following completion of suspension | Insider Trading: Panthers breathe sigh of relief on Barkov | Collier faces a big decision about returning to the Lynx as WNBA free... | Merino comes up clutch again for Spain as Kane marks record-setting m... | Dreger on the Red Wings' franchise turmoil, how Leafs are handling Mc... | "
 }
