@@ -1,16 +1,6 @@
 {
-  "generated_at": "2026-10-07T20:10:41.467967-04:00",
+  "generated_at": "2026-10-07T23:00:05.533574-04:00",
   "headlines": [
-    {
-      "title": "Breen apologizes after LeBron refutes Embiid story",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/nba/article/breen-apologizes-after-lebron-refutes-embiid-story-n1-50127138/"
-    },
-    {
-      "title": "Adell, Ramirez star as Guardians beat White Sox to avoid elimination",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/mlb/article/adell-ramirez-star-as-guardians-beat-white-sox-to-avoid-elimination/"
-    },
     {
       "title": "Vikings' Jefferson says plan is to play vs. Saints",
       "source": "TSN",
@@ -25,7 +15,17 @@
       "title": "Buss siblings formally file case against Jeanie over Lakers sale",
       "source": "TSN",
       "url": "https://www.tsn.ca/nba/article/buss-siblings-formally-file-case-against-jeanie-over-lakers-sale-n1-50128244/"
+    },
+    {
+      "title": "RBI triples from Adell, Ramirez help Guardians stay alive with win ov...",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/wires/article/follow-live-white-sox-look-to-close-out-guardians-in-alds/"
+    },
+    {
+      "title": "Bengals' WR Chase (concussion), Higgins (adductor) miss practice Wedn...",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/nfl/article/bengals-wr-chase-concussion-higgins-adductor-deal-with-injuries/"
     }
   ],
-  "ticker": "SPORTS: Breen apologizes after LeBron refutes Embiid story | Adell, Ramirez star as Guardians beat White Sox to avoid elimination | Vikings' Jefferson says plan is to play vs. Saints | Steelers QB Rodgers downplays heated exchange with coach McCarthy | Buss siblings formally file case against Jeanie over Lakers sale | "
+  "ticker": "SPORTS: Vikings' Jefferson says plan is to play vs. Saints | Steelers QB Rodgers downplays heated exchange with coach McCarthy | Buss siblings formally file case against Jeanie over Lakers sale | RBI triples from Adell, Ramirez help Guardians stay alive with win ov... | Bengals' WR Chase (concussion), Higgins (adductor) miss practice Wedn... | "
 }
