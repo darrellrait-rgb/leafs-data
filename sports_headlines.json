@@ -1,15 +1,10 @@
 {
-  "generated_at": "2026-10-08T20:21:11.947257-04:00",
+  "generated_at": "2026-10-08T20:51:14.076135-04:00",
   "headlines": [
     {
       "title": "McKenna set to start first NHL road game on Leafs third line",
       "source": "TSN",
       "url": "https://www.tsn.ca/nhl/article/mckenna-set-to-start-first-nhl-road-game-on-leafs-third-line/"
-    },
-    {
-      "title": "WATCH LIVE: Flyers vs. Senators (Regional)",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/wires/article/watch-live-flyers-vs-senators-regional/"
     },
     {
       "title": "Payton taking over play-calling duties as Broncos search for spark on...",
@@ -25,7 +20,12 @@
       "title": "Nurse out, Aubin in at Canadian women's hockey team selection camp",
       "source": "TSN",
       "url": "https://www.tsn.ca/hockey-canada/article/nurse-out-aubin-in-at-canadian-womens-hockey-team-selection-camp/"
+    },
+    {
+      "title": "Devils place pending UFA RW Noesen on waivers",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/nhl/article/devils-place-pending-ufa-d-noesen-on-waivers/"
     }
   ],
-  "ticker": "SPORTS: McKenna set to start first NHL road game on Leafs third line | WATCH LIVE: Flyers vs. Senators (Regional) | Payton taking over play-calling duties as Broncos search for spark on... | Yankees swept out of the ALDS by Rays, extending title drought to 17... | Nurse out, Aubin in at Canadian women's hockey team selection camp | "
+  "ticker": "SPORTS: McKenna set to start first NHL road game on Leafs third line | Payton taking over play-calling duties as Broncos search for spark on... | Yankees swept out of the ALDS by Rays, extending title drought to 17... | Nurse out, Aubin in at Canadian women's hockey team selection camp | Devils place pending UFA RW Noesen on waivers | "
 }
