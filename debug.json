@@ -1,10 +1,10 @@
 {
   "errors": [],
   "news_stats": [
-    "[NEWS] CP24: 28 items checked, 2 matched; CBC: 0 items checked, 0 matched",
-    "[LEAFS NEWS] TSN: 6 items checked, 2 matched; CBC: 0 items checked, 0 matched",
-    "[RAPTORS NEWS] TSN: 31 items checked, 0 matched; CBC: 40 items checked, 0 matched",
-    "[JAYS NEWS] TSN: 31 items checked, 0 matched; CBC: 40 items checked, 1 matched",
-    "[SPORTS HEADLINES] TSN: 31 items; CP24: 0 sports items of 28 total"
+    "[NEWS] CP24: 97 items checked, 2 matched; CBC: 0 items checked, 0 matched",
+    "[LEAFS NEWS] TSN: 24 items checked, 2 matched; CBC: 0 items checked, 0 matched",
+    "[RAPTORS NEWS] TSN: 52 items checked, 2 matched; CBC: 0 items checked, 0 matched",
+    "[JAYS NEWS] TSN: 80 items checked, 0 matched; CBC: 40 items checked, 1 matched",
+    "[SPORTS HEADLINES] TSN: 80 items; CP24: 7 sports items of 97 total"
   ]
 }
