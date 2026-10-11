@@ -6,7 +6,7 @@ import sys
 import unicodedata
 import urllib.request
 import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta
+from datetime import datetime
 from zoneinfo import ZoneInfo
 
 TZ = ZoneInfo("America/Toronto")
@@ -51,7 +51,7 @@ SPORTS_HEADLINES_COUNT = 5
 TSN_SITEMAP_BASE  = "https://www.tsn.ca/arc/outboundfeeds/sitemap-news"
 CP24_SITEMAP_BASE = "https://www.cp24.com/arc/outboundfeeds/sitemap-news"
 LEAFS_KEYWORDS     = ["leafs", "maple leafs"]
-RAPTORS_KEYWORDS   = ["raptors", "raps"]
+RAPTORS_KEYWORDS   = ["raptors"]
 JAYS_KEYWORDS      = ["blue jays", "jays"]
 
 
@@ -79,192 +79,6 @@ def get_xml(url, headers=None):
         print(f"FETCH FAILED: {url}\n  {e}", file=sys.stderr)
         ERRORS.append(f"{url.split('?')[0][8:90]} -> {str(e)[:80]}")
         return None
-
-
-def local_dt(iso_utc):
-    return datetime.fromisoformat(iso_utc.replace("Z", "+00:00")).astimezone(TZ)
-
-
-def when(iso_utc):
-    d = local_dt(iso_utc)
-    t = d.strftime("%I:%M%p").lstrip("0")
-    if d.date() == datetime.now(TZ).date():
-        return f"TODAY {t}"
-    return f"{d.strftime('%m/%d')} {t}"
-
-
-# ---------------------------------------------------------------- NHL
-def nhl_score(g, side):
-    return g.get(side, {}).get("score", "-")
-
-
-def leafs():
-    base = "https://api-web.nhle.com/v1/club-schedule-season/TOR/"
-    sched = get(base + "now")
-    if not sched:
-        return "LEAFS: NO DATA | ", ""
-    games = sched.get("games", [])
-
-    live = next((g for g in games if g.get("gameState") in ("LIVE", "CRIT")), None)
-    if live:
-        box = get(f"https://api-web.nhle.com/v1/gamecenter/{live['id']}/boxscore") or {}
-        a = box.get("awayTeam", live["awayTeam"])
-        h = box.get("homeTeam", live["homeTeam"])
-        per = box.get("periodDescriptor", {}).get("number")
-        clk = box.get("clock", {}).get("timeRemaining")
-        detail = " ".join(x for x in (f"P{per}" if per else "", clk or "") if x) or "LIVE"
-        return (f"LEAFS LIVE: {a.get('abbrev','AWAY')} {a.get('score', 0)} @ "
-                f"{h.get('abbrev','HOME')} {h.get('score', 0)} ({detail}) | "), ""
-
-    def done(g):
-        return g.get("gameState") in ("OFF", "FINAL")
-
-    last = None
-    nxt = None
-    for g in games:
-        if done(g):
-            last = g
-        else:
-            nxt = g
-            break
-
-    # Offseason / season rollover: look at the neighbouring seasons
-    if nxt is None and sched.get("currentSeason"):
-        start = int(str(sched["currentSeason"])[:4]) + 1
-        nxt_sched = get(f"{base}{start}{start + 1}")
-        if nxt_sched and nxt_sched.get("games"):
-            nxt = nxt_sched["games"][0]
-    if last is None and sched.get("previousSeason"):
-        prev = get(f"{base}{sched['previousSeason']}")
-        if prev:
-            for g in prev.get("games", []):
-                if done(g):
-                    last = g
-
-    out = "LEAFS "
-    next_utc = ""
-    if nxt:
-        tag = " (PRE)" if nxt.get("gameType") == 1 else ""
-        out += (f"NEXT{tag}: {nxt['awayTeam'].get('abbrev','')} @ "
-                f"{nxt['homeTeam'].get('abbrev','')} {when(nxt['startTimeUTC'])} | ")
-        next_utc = nxt.get("startTimeUTC", "")
-    else:
-        out += "NEXT: NONE | "
-    if last:
-        tag = " (PRE)" if last.get("gameType") == 1 else ""
-        out += (f"LAST{tag}: {last['awayTeam'].get('abbrev','')} {nhl_score(last,'awayTeam')} @ "
-                f"{last['homeTeam'].get('abbrev','')} {nhl_score(last,'homeTeam')} | ")
-    else:
-        out += "LAST: NONE | "
-    return out, next_utc
-
-
-def leafs_standings():
-    """One line: division rank + record + points, e.g. 'LEAFS 3RD ATLANTIC 10-5-2 21PTS | '"""
-    data = get("https://api-web.nhle.com/v1/standings/now")
-    if not data:
-        return ""
-    rows = data.get("standings", [])
-    tor = next((r for r in rows if r.get("teamAbbrev", {}).get("default") == "TOR"), None)
-    if not tor:
-        return ""
-    div = tor.get("divisionAbbrev", "")
-    div_name = {"A": "ATLANTIC", "M": "METRO", "C": "CENTRAL", "P": "PACIFIC"}.get(div, div)
-    same_div = [r for r in rows if r.get("divisionAbbrev") == div]
-    same_div.sort(key=lambda r: (-(r.get("points", 0)), -(r.get("wins", 0))))
-    rank = next((i + 1 for i, r in enumerate(same_div)
-                 if r.get("teamAbbrev", {}).get("default") == "TOR"), 0)
-    ord_suffix = "TH" if 11 <= rank % 100 <= 13 else {1: "ST", 2: "ND", 3: "RD"}.get(rank % 10, "TH")
-    w, l, otl = tor.get("wins", 0), tor.get("losses", 0), tor.get("otLosses", 0)
-    pts = tor.get("points", 0)
-    return f"LEAFS {rank}{ord_suffix} {div_name} {w}-{l}-{otl} {pts}PTS | "
-
-
-# ---------------------------------------------------------------- MLB
-def jays():
-    today = datetime.now(TZ).date()
-    start = (today - timedelta(days=3)).isoformat()
-    end = (today + timedelta(days=10)).isoformat()
-    data = get("https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=141"
-               f"&startDate={start}&endDate={end}&hydrate=team,linescore")
-    if not data:
-        return "BLUE JAYS: NO DATA | ", ""
-
-    games = [g for d in data.get("dates", []) for g in d.get("games", [])]
-    games.sort(key=lambda g: g.get("gameDate", ""))
-    if not games:
-        return "BLUE JAYS: NO GAMES | ", ""
-
-    def state(g):
-        return g.get("status", {}).get("abstractGameState", "")
-
-    def postponed(g):
-        return g.get("status", {}).get("detailedState", "") in ("Postponed", "Cancelled")
-
-    def abbr(g, side):
-        return g["teams"][side].get("team", {}).get("abbreviation", side.upper())
-
-    def runs(g, side):
-        return g["teams"][side].get("score", 0)
-
-    live = next((g for g in games if state(g) == "Live"), None)
-    if live:
-        ls = live.get("linescore", {})
-        half = str(ls.get("inningState", "")).upper()
-        inn = ls.get("currentInning", "")
-        detail = f"{half} {inn}".strip() or "LIVE"
-        return (f"BLUE JAYS LIVE: {abbr(live,'away')} {runs(live,'away')} @ "
-                f"{abbr(live,'home')} {runs(live,'home')} ({detail}) | "), ""
-
-    upcoming = [g for g in games if state(g) == "Preview" and not postponed(g)]
-    finals = [g for g in games if state(g) == "Final"]
-
-    out = "BLUE JAYS "
-    next_utc = ""
-    if upcoming:
-        g = upcoming[0]
-        out += f"NEXT: {abbr(g,'away')} @ {abbr(g,'home')} {when(g['gameDate'])} | "
-        next_utc = g.get("gameDate", "")
-    else:
-        out += "NEXT: NONE | "
-    if finals:
-        g = finals[-1]
-        out += (f"LAST: {abbr(g,'away')} {runs(g,'away')} @ "
-                f"{abbr(g,'home')} {runs(g,'home')} | ")
-    else:
-        out += "LAST: NONE | "
-    return out, next_utc
-
-
-def jays_standings():
-    """One line: division rank + record + games back, e.g. 'JAYS 2ND AL EAST 15-10 GB 2.5 | '"""
-    data = get("https://statsapi.mlb.com/api/v1/standings?leagueId=103,104"
-               f"&season={datetime.now(TZ).year}&standingsTypes=regularSeason")
-    if not data:
-        return ""
-    for rec in data.get("records", []):
-        for tr in rec.get("teamRecords", []):
-            if tr.get("team", {}).get("id") == 141:
-                rank = int(tr.get("divisionRank", 0) or 0)
-                ord_suffix = ("TH" if 11 <= rank % 100 <= 13
-                              else {1: "ST", 2: "ND", 3: "RD"}.get(rank % 10, "TH"))
-                w, l = tr.get("wins", 0), tr.get("losses", 0)
-                gb = tr.get("gamesBack", "-")
-                gb_txt = "" if gb in ("-", "0.0", None) else f" GB {gb}"
-
-                # Bonus, best-effort: wild card standing, if the field is present
-                # and the team isn't leading its division (where it's moot).
-                wc_txt = ""
-                wc_rank = tr.get("wildCardRank")
-                wc_gb = tr.get("wildCardGamesBack")
-                if rank != 1 and wc_rank and wc_gb not in (None, "-"):
-                    wcr = int(wc_rank)
-                    wcr_suffix = ("TH" if 11 <= wcr % 100 <= 13
-                                  else {1: "ST", 2: "ND", 3: "RD"}.get(wcr % 10, "TH"))
-                    wc_txt = f" WC {wcr}{wcr_suffix} {wc_gb}GB"
-
-                return f"JAYS {rank}{ord_suffix} AL EAST {w}-{l}{gb_txt}{wc_txt} | "
-    return ""
 
 
 # ---------------------------------------------------------------- News (TSN sitemap + CBC RSS)
@@ -492,31 +306,14 @@ def main():
 
     result = {}
 
-    # Sources that return (ticker_text, next_game_utc)
-    for key, fn in (("leafs", leafs), ("jays", jays)):
-        try:
-            text, next_utc = fn()
-            text = clean(text)
-        except Exception as e:  # never let one source break the others
-            print(f"{key} failed: {e!r}", file=sys.stderr)
-            text, next_utc = f"{key.upper()}: ERROR | ", ""
-        if ("NO DATA" in text or "ERROR" in text) and isinstance(old.get(key), str):
-            text = old[key]
-            next_utc = old.get(f"{key}_next_utc", next_utc)
-        result[key] = text
-        result[f"{key}_next_utc"] = next_utc
-        print(f"{key}: {text}  (next: {next_utc or 'none'})")
-
-    # Plain ticker-text sources. Raptors scores/schedule aren't fetched here
-    # at all - cdn.nba.com, ESPN and (without a configured BDL_KEY secret)
-    # BallDontLie all fail from GitHub's servers, confirmed repeatedly. That
-    # data comes entirely from the device itself instead, which fetches
-    # BallDontLie and ESPN directly from your home network, not blocked the
-    # same way. Keeping a guaranteed-to-fail fallback here was just wasted
-    # requests and log noise every run.
-    for key, fn in (("leafs_standings", leafs_standings),
-                     ("jays_standings", jays_standings),
-                     ("news", news),
+    # Only news headlines are built here now. Scores, schedule and standings
+    # for all three teams are fetched directly by the ESP32 itself (NHL/MLB
+    # aren't blocked from GitHub's servers the way NBA.com/ESPN are, but
+    # there's no reason to route them through a 5-minute batch job when the
+    # device can just ask for them itself every minute). News stays here
+    # because it needs TSN/CP24 sitemap XML parsing, not a good fit for a
+    # microcontroller, and it isn't time-sensitive the way scores are.
+    for key, fn in (("news", news),
                      ("leafs_news", leafs_news),
                      ("raptors_news", raptors_news),
                      ("jays_news", jays_news)):
