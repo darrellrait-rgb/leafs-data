@@ -51,7 +51,7 @@ SPORTS_HEADLINES_COUNT = 5
 TSN_SITEMAP_BASE  = "https://www.tsn.ca/arc/outboundfeeds/sitemap-news"
 CP24_SITEMAP_BASE = "https://www.cp24.com/arc/outboundfeeds/sitemap-news"
 LEAFS_KEYWORDS     = ["leafs", "maple leafs"]
-RAPTORS_KEYWORDS   = ["raptors"]
+RAPTORS_KEYWORDS   = ["raptors", "raps"]
 JAYS_KEYWORDS      = ["blue jays", "jays"]
 
 
