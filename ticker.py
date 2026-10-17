@@ -1,29 +1,20 @@
 from datetime import datetime
 import time
 import requests
-import yaml
 
-# Load the dedicated ticker config file
-CONFIG_FILE = "ticker_config.yml"
-
-
-def load_config():
-  try:
-    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-      return yaml.safe_load(f) or {}
-  except FileNotFoundError:
-    print(f"Warning: {CONFIG_FILE} not found. Using default settings.")
-    return {}
+# --- SETTINGS (Replaces the YAML file) ---
+REFRESH_INTERVAL_SEC = 300
+LATITUDE = 43.65
+LONGITUDE = -79.38
+# ----------------------------------------
 
 
 def get_live_weather():
   try:
-    # Open-Meteo free API for Toronto coordinates (43.65, -79.38)
-    url = "https://api.open-meteo.com/v1/forecast?latitude=43.65&longitude=-79.38&current=temperature_2m,weather_code"
+    url = f"https://api.open-meteo.com/v1/forecast?latitude={LATITUDE}&longitude={LONGITUDE}&current=temperature_2m,weather_code"
     res = requests.get(url, timeout=5).json()
     temp = round(res["current"]["temperature_2m"])
     current_time = datetime.now().strftime("%I:%M %p")
-    # Clean format without brackets and using standard Unicode degree symbol
     return f"{current_time} | {temp}\u00B0C Partly Cloudy"
   except Exception:
     current_time = datetime.now().strftime("%I:%M %p")
@@ -45,10 +36,11 @@ def get_espn_game(sport_path, league_path, team_keyword):
         elif "InProgress" in status or "Live" in status:
           return f"{short_name} | LIVE"
         else:
-          # Upcoming game date/time formatting
           date_str = event.get("date")
           if date_str:
-            dt = datetime.strptime(date_str, "%Y-%m-%dT%H:%MZ")
+            # Handle potential timezone 'Z' format cleanly
+            clean_date = date_str.replace("Z", "")
+            dt = datetime.fromisoformat(clean_date)
             formatted_time = dt.strftime("%a %b %d at %I:%M %p")
             return f"{short_name} | {formatted_time}"
         return f"{short_name} | {status}"
@@ -58,7 +50,6 @@ def get_espn_game(sport_path, league_path, team_keyword):
 
 
 def main():
-  config = load_config()
   print("Starting LED Ticker with live data streams...")
 
   while True:
@@ -68,17 +59,14 @@ def main():
     bills_stream = get_espn_game("football", "nfl", "Bills")
     raptors_stream = get_espn_game("basketball", "nba", "Raptors")
 
-    # Print or send to LED matrix framework
-    print("--- TICKER UPDATE ---")
+    print("\n--- TICKER UPDATE ---")
     print(weather_stream)
     print(leafs_stream)
     print(jays_stream)
     print(bills_stream)
     print(raptors_stream)
 
-    # Refresh interval from config or default to 300 seconds (5 mins)
-    interval = config.get("ticker", {}).get("refresh_interval_sec", 300)
-    time.sleep(interval)
+    time.sleep(REFRESH_INTERVAL_SEC)
 
 
 if __name__ == "__main__":
