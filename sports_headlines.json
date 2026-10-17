@@ -1,6 +1,11 @@
 {
-  "generated_at": "2026-10-17T02:06:04.083823-04:00",
+  "generated_at": "2026-10-17T06:41:17.659967-04:00",
   "headlines": [
+    {
+      "title": "Canada pulls off upset against England in women's rugby, snaps 41-gam...",
+      "source": "CP24",
+      "url": "https://www.cp24.com/news/sports/2026/10/17/canada-pulls-off-upset-against-england-in-womens-rugby-snaps-41-game-unbeaten-streak/"
+    },
     {
       "title": "James, Embiid play 76ers' preseason finale, but 'still working on our...",
       "source": "TSN",
@@ -20,12 +25,7 @@
       "title": "MacKinnon has goal, three assists, Lehkonen scores twice as Avs beat...",
       "source": "TSN",
       "url": "https://www.tsn.ca/nhl/article/mackinnon-has-goal-three-assists-lehkonen-scores-twice-as-avs-beat-penguins/"
-    },
-    {
-      "title": "Elks clinch West Division with win over Blue Bombers",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/wires/article/watch-live-blue-bombers-vs-elks-3/"
     }
   ],
-  "ticker": "SPORTS: James, Embiid play 76ers' preseason finale, but 'still working on our... | Elks clinch West Division, right to host West final after win over Bl... | Lindholm's big 3rd period sparks streaking Bruins' comeback win over... | MacKinnon has goal, three assists, Lehkonen scores twice as Avs beat... | Elks clinch West Division with win over Blue Bombers | "
+  "ticker": "SPORTS: Canada pulls off upset against England in women's rugby, snaps 41-gam... | James, Embiid play 76ers' preseason finale, but 'still working on our... | Elks clinch West Division, right to host West final after win over Bl... | Lindholm's big 3rd period sparks streaking Bruins' comeback win over... | MacKinnon has goal, three assists, Lehkonen scores twice as Avs beat... | "
 }
