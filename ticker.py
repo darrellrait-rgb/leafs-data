@@ -1,37 +1,70 @@
 import datetime
+import json
 import os
 import time
-import requests
-import yaml
+import urllib.request
 
-# Load configuration from config.yml
 CONFIG_FILE = "config.yml"
 
 
-def load_config():
-  if os.path.exists(CONFIG_FILE):
+def load_simple_yaml():
+  """Parses a basic flat config.yml without needing the PyYAML library."""
+  config = {
+      "esp32_url": "http://ticker.local/set_ticker",
+      "lat": 43.6532,
+      "lon": -79.3832,
+      "nhl_team": "TOR",
+      "nfl_keyword": "Bills",
+  }
+  if not os.path.exists(CONFIG_FILE):
+    return config
+
+  try:
     with open(CONFIG_FILE, "r") as f:
-      return yaml.safe_load(f)
-  else:
-    # Default fallback config if file is missing
-    return {
-        "esp32": {"url": "http://ticker.local/set_ticker", "timeout": 5},
-        "weather": {"latitude": 43.6532, "longitude": -79.3832},
-        "sports": {"teams": {"nhl": "TOR", "nfl": "Bills"}},
-    }
+      for line in f:
+        line = line.strip()
+        if not line or line.startswith("#"):
+          continue
+        if "url:" in line:
+          config["esp32_url"] = line.split(":", 1)[1].strip().strip('"\'')
+        elif "latitude:" in line:
+          config["lat"] = float(line.split(":", 1)[1].strip())
+        elif "longitude:" in line:
+          config["lon"] = float(line.split(":", 1)[1].strip())
+        elif "nhl:" in line:
+          config["nhl_team"] = line.split(":", 1)[1].strip().strip('"\'')
+        elif "nfl:" in line:
+          config["nfl_keyword"] = line.split(":", 1)[1].strip().strip('"\'')
+  except Exception as e:
+    print(f"Error reading config.yml, using defaults: {e}")
+
+  return config
 
 
-config = load_config()
-ESP32_URL = config["esp32"]["url"]
+config = load_simple_yaml()
+ESP32_URL = config["esp32_url"]
+
+
+def fetch_json(url):
+  try:
+    req = urllib.request.Request(
+        url, headers={"User-Agent": "ESP32-Ticker-Script/1.0"}
+    )
+    with urllib.request.urlopen(req, timeout=5) as response:
+      return json.loads(response.read().decode())
+  except Exception as e:
+    print(f"API fetch error for {url}: {e}")
+    return None
 
 
 def fetch_weather():
-  try:
-    lat = config["weather"]["latitude"]
-    lon = config["weather"]["longitude"]
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
-    res = requests.get(url, timeout=5).json()
-    current = res.get("current_weather", {})
+  lat = config["lat"]
+  lon = config["lon"]
+  url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
+  res = fetch_json(url)
+
+  if res and "current_weather" in res:
+    current = res["current_weather"]
     temp = round(current.get("temperature", 0))
     code = current.get("weathercode", 0)
 
@@ -50,47 +83,41 @@ def fetch_weather():
     now = datetime.datetime.now()
     time_str = now.strftime("%I:%M %p").lstrip("0")
     return f"[ {time_str} | {temp}°C {condition} ]  |  "
-  except Exception as e:
-    print(f"Weather error: {e}")
-    return "[ TORONTO ]  |  "
+
+  return "[ TORONTO ]  |  "
 
 
 def fetch_nhl():
-  try:
-    team_abbr = config["sports"]["teams"].get("nhl", "TOR")
-    url = "https://api-web.nhle.com/v1/score/now"
-    res = requests.get(url, timeout=5).json()
-    for game in res.get("games", []):
+  team_abbr = config["nhl_team"]
+  res = fetch_json("https://api-web.nhle.com/v1/score/now")
+  if res and "games" in res:
+    for game in res["games"]:
       home = game["homeTeam"]["abbrev"]
       away = game["awayTeam"]["abbrev"]
       if home == team_abbr or away == team_abbr:
         state = game["gameState"]
+        h_score = game["homeTeam"]["score"]
+        a_score = game["awayTeam"]["score"]
         if state in ["LIVE", "CRIT"]:
-          h_score = game["homeTeam"]["score"]
-          a_score = game["awayTeam"]["score"]
           period = game.get("periodDescriptor", {}).get("number", 1)
           return (
               f"LEAFS LIVE: {away} {a_score} @ {home} {h_score} (P{period})"
               "  |  "
           )
         elif state in ["OFF", "FINAL"]:
-          h_score = game["homeTeam"]["score"]
-          a_score = game["awayTeam"]["score"]
           return (
               f"LEAFS LAST: {away} {a_score} @ {home} {h_score} (FINAL)  |  "
           )
-    return "LEAFS NEXT: SCHEDULE UPDATING...  |  "
-  except Exception as e:
-    print(f"NHL error: {e}")
-    return "LEAFS: REFRESH ERROR  |  "
+  return "LEAFS NEXT: SCHEDULE UPDATING...  |  "
 
 
 def fetch_bills():
-  try:
-    keyword = config["sports"]["teams"].get("nfl", "Bills")
-    url = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
-    res = requests.get(url, timeout=5).json()
-    for event in res.get("events", []):
+  keyword = config["nfl_keyword"]
+  res = fetch_json(
+      "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+  )
+  if res and "events" in res:
+    for event in res["events"]:
       if keyword in event.get("name", ""):
         comp = event["competitions"][0]
         state = comp["status"]["type"]["state"]
@@ -122,24 +149,27 @@ def fetch_bills():
           return (
               f"BILLS NEXT: {away_team} @ {home_team} ({date_str})  |  "
           )
-    return "BILLS NEXT: BYE / OFFWEEK  |  "
-  except Exception as e:
-    print(f"NFL error: {e}")
-    return "BILLS: REFRESH ERROR  |  "
+  return "BILLS NEXT: BYE / OFFWEEK  |  "
 
 
 def push_to_esp32():
-  payload = {
+  payload = json.dumps({
       "weather": fetch_weather(),
       "leafs": fetch_nhl(),
       "jays": "JAYS: OFFSEASON / BREAK  |  ",
       "bills": fetch_bills(),
       "raps": "RAPS NEXT: CHI @ TOR WED 10/21 7:30PM  |  ",
-  }
+  }).encode("utf-8")
 
   try:
-    response = requests.post(ESP32_URL, json=payload, timeout=5)
-    print(f"Pushed update to ESP32: Status {response.status_code}")
+    req = urllib.request.Request(
+        ESP32_URL,
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=5) as response:
+      print(f"Pushed update to ESP32: Status {response.status}")
   except Exception as e:
     print(f"Failed to push update to ESP32: {e}")
 
