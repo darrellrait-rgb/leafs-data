@@ -1,25 +1,11 @@
-ticker:
-  name: "Toronto LED Ticker"
-  refresh_interval_sec: 300
-  brightness: 12
-  encoding: "utf-8"
-  location:
-    city: "Toronto"
-    latitude: 43.65
-    longitude: -79.38
-  streams:
-    - name: "Weather"
-      enabled: true
-      source: "open-meteo"
-    - name: "Maple Leafs"
-      enabled: true
-      league: "NHL"
-    - name: "Blue Jays"
-      enabled: true
-      league: "MLB"
-    - name: "Bills"
-      enabled: true
-      league: "NFL"
-    - name: "Raptors"
-      enabled: true
-      league: "NBA"
+import yaml
+
+# Specify your custom config file name here
+config_file = "ticker_config.yml"
+
+try:
+  with open(config_file, "r", encoding="utf-8") as f:
+    config = yaml.safe_load(f)
+except FileNotFoundError:
+  print(f"Could not find {config_file}, using defaults.")
+  config = {}
