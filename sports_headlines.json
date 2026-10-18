@@ -1,6 +1,16 @@
 {
-  "generated_at": "2026-10-18T02:30:43.725748-04:00",
+  "generated_at": "2026-10-18T07:39:50.782599-04:00",
   "headlines": [
+    {
+      "title": "Stampeders keep playoff hopes alive with win over Lions",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/cfl/article/stampeders-keep-playoff-hopes-alive-with-win-over-lions/"
+    },
+    {
+      "title": "Gators bite back, upset No. 7 Texas",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/ncaa/football/article/gators-bite-back-upset-no-7-texas/"
+    },
     {
       "title": "Wall-to-wall Top 25 showdowns, with 6 ranked matchups on tap starting...",
       "source": "TSN",
@@ -15,17 +25,7 @@
       "title": "Bachmeier leads winning drive, No. 8 BYU outlasts No. 2 Notre Dame",
       "source": "TSN",
       "url": "https://www.tsn.ca/ncaa/article/bachmeier-leads-winning-drive-no-8-byu-outlasts-no-2-notre-dame/"
-    },
-    {
-      "title": "Messi scores twice, adds assist to propel Inter Miami to victory over...",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/soccer/article/messi-scores-twice-adds-assist-to-propel-inter-miami-to-victory-over-atlanta-united/"
-    },
-    {
-      "title": "Musa answers Bogusz PK goal in stoppage time with one of his own as D...",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/soccer/mls/article/musa-answers-bogusz-pk-goal-in-stoppage-time-with-one-of-his-own-as-dallas-ties-dynamo/"
     }
   ],
-  "ticker": "SPORTS: Wall-to-wall Top 25 showdowns, with 6 ranked matchups on tap starting... | Rays capitalize on Guardians errors, win to tie ALCS at 2-2 | Bachmeier leads winning drive, No. 8 BYU outlasts No. 2 Notre Dame | Messi scores twice, adds assist to propel Inter Miami to victory over... | Musa answers Bogusz PK goal in stoppage time with one of his own as D... | "
+  "ticker": "SPORTS: Stampeders keep playoff hopes alive with win over Lions | Gators bite back, upset No. 7 Texas | Wall-to-wall Top 25 showdowns, with 6 ranked matchups on tap starting... | Rays capitalize on Guardians errors, win to tie ALCS at 2-2 | Bachmeier leads winning drive, No. 8 BYU outlasts No. 2 Notre Dame | "
 }
