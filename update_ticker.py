@@ -274,6 +274,99 @@ def raptors_news():
 def jays_news():
     return team_headlines(JAYS_KEYWORDS, TEAM_HEADLINE_COUNT, "JAYS NEWS: ")
 
+import urllib.request
+import json
+from datetime import datetime
+
+def get_bills_data():
+    try:
+        # 1. Fetch Bills Schedule from ESPN
+        url = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/2/schedule"
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=10) as response:
+            data = json.loads(response.read().decode())
+            
+        events = data.get("events", [])
+        last_game = "LAST: NONE | "
+        next_game = "NEXT: NONE | "
+        
+        for e in events:
+            comp = e["competitions"][0]
+            status_type = comp["status"]["type"]
+            completed = status_type.get("completed", False)
+            state = status_type.get("state", "")
+            date_iso = e.get("date", "")
+            
+            competitors = comp["competitors"]
+            home_team = next((c for c in competitors if c["homeAway"] == "home"), None)
+            away_team = next((c for c in competitors if c["homeAway"] == "away"), None)
+            
+            if home_team and away_team:
+                h_abbr = home_team["team"]["abbreviation"]
+                a_abbr = away_team["team"]["abbreviation"]
+                h_score = home_team.get("score", "0")
+                a_score = away_team.get("score", "0")
+                
+                if state == "in":
+                    detail = status_type.get("shortDetail", "LIVE")
+                    next_game = f"BILLS LIVE: {a_abbr} {a_score} @ {h_abbr} {h_score} ({detail}) | "
+                    break
+                elif completed:
+                    last_game = f"LAST: {a_abbr} {a_score} @ {h_abbr} {h_score} (FINAL) | "
+                elif not completed and "NEXT:" not in next_game:
+                    # Parse date/time nicely if possible
+                    try:
+                        dt = datetime.strptime(date_iso[:16], "%Y-%m-%dT%H:%M")
+                        date_str = dt.strftime("%m/%d %I:%M%p")
+                    except Exception:
+                        date_str = date_iso[:10]
+                    next_game = f"NEXT: {a_abbr} @ {h_abbr} {date_str} | "
+
+        bills_schedule_text = f"BILLS {next_game}{last_game}" if not next_game.startswith("BILLS LIVE:") else next_game
+        
+        # 2. Fetch Standings from ESPN
+        standings_url = "https://site.api.espn.com/apis/v2/sports/football/nfl/standings"
+        req_st = urllib.request.Request(standings_url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req_st, timeout=10) as resp_st:
+            st_data = json.loads(resp_st.read().decode())
+            
+        bills_standings_text = ""
+        for group in st_data.get("children", []):
+            if "AFC East" in group.get("name", ""):
+                rank = 1
+                for team_entry in group.get("standings", []):
+                    if team_entry["team"]["abbreviation"] == "BUF":
+                        stats = {s["name"]: s["value"] for s in team_entry.get("stats", [])}
+                        wins = int(stats.get("wins", 0))
+                        losses = int(stats.get("losses", 0))
+                        ordinal = "ST" if rank == 1 else ("ND" if rank == 2 else "TH")
+                        bills_standings_text = f"BILLS {rank}{ordinal} AFC EAST {wins}-{losses} | "
+                        break
+                    rank += 1
+                    
+        return bills_schedule_text, bills_standings_text
+    except Exception as e:
+        print(f"Error fetching Bills data: {e}")
+        return "BILLS: NO DATA | ", ""
+
+# --- Integration inside your main build script ---
+if __name__ == "__main__":
+    bills_sched, bills_stand = get_bills_data()
+
+    # Load or structure your final dictionary
+    output_data = {
+        "news": "TORONTO NEWS HEADLINES...", # Your existing news string variable
+        "leafs_news": "",                   # Your existing Leafs news
+        "jays_news": "",                    # Your existing Jays news
+        "raptors_news": "",                 # Your existing Raptors news
+        "bills": bills_sched,
+        "bills_info": bills_stand
+    }
+
+    with open("leafs.json", "w") as f:
+        json.dump(output_data, f)
+    print("Successfully updated leafs.json with Bills data.")
+
 
 # ---------------------------------------------------------------- main
 # The LED matrix font only has plain ASCII. Swap common typographic characters
