@@ -251,6 +251,15 @@ def jays_news():
 # ---------------------------------------------------------------- Buffalo Bills (ESPN)
 _BILLS_CACHE = None
 
+def extract_score(competitor):
+    score_val = competitor.get("score", "0")
+    if isinstance(score_val, dict):
+        score_val = score_val.get("value", "0")
+    try:
+        return str(int(float(score_val)))
+    except (ValueError, TypeError):
+        return "0"
+
 def get_bills_data():
     global _BILLS_CACHE
     if _BILLS_CACHE is not None:
@@ -308,8 +317,8 @@ def get_bills_data():
                 h_abbr = home_team.get("team", {}).get("abbreviation", "BUF")
                 a_abbr = away_team.get("team", {}).get("abbreviation", "BUF")
                 
-                h_score = str(home_team.get("score", "0"))
-                a_score = str(away_team.get("score", "0"))
+                h_score = extract_score(home_team)
+                a_score = extract_score(away_team)
 
                 if state == "in":
                     detail = status_type.get("shortDetail", "LIVE")
