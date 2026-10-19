@@ -282,6 +282,7 @@ def get_bills_data():
                 continue
 
             last_game = ""
+            best_last_date = ""
             next_game = ""
             live_game = ""
 
@@ -306,15 +307,20 @@ def get_bills_data():
 
                 h_abbr = home_team.get("team", {}).get("abbreviation", "BUF")
                 a_abbr = away_team.get("team", {}).get("abbreviation", "BUF")
-                h_score = home_team.get("score", "0")
-                a_score = away_team.get("score", "0")
+                
+                # Safely extract score regardless of string or int representation
+                h_score = str(home_team.get("score", "0"))
+                a_score = str(away_team.get("score", "0"))
 
                 if state == "in":
                     detail = status_type.get("shortDetail", "LIVE")
                     live_game = f"BILLS LIVE: {a_abbr} {a_score} @ {h_abbr} {h_score} ({detail}) | "
                     break
                 elif completed:
-                    last_game = f"LAST: {a_abbr} {a_score} @ {h_abbr} {h_score} (FINAL) | "
+                    # Select the most recent completed game based on ISO timestamp
+                    if not best_last_date or date_iso > best_last_date:
+                        best_last_date = date_iso
+                        last_game = f"LAST: {a_abbr} {a_score} @ {h_abbr} {h_score} (FINAL) | "
                 elif not completed and not next_game:
                     try:
                         dt = datetime.strptime(date_iso[:16], "%Y-%m-%dT%H:%M")
@@ -379,17 +385,6 @@ def get_bills_data():
     bills_info_combined = (bills_stand_text + bills_news_text).strip()
     _BILLS_CACHE = (bills_sched_text, bills_info_combined)
     return _BILLS_CACHE
-
-
-def bills():
-    sched, _ = get_bills_data()
-    return sched
-
-
-def bills_info():
-    _, info = get_bills_data()
-    return info
-
 
 # ---------------------------------------------------------------- main
 _ASCII_SWAPS = {
