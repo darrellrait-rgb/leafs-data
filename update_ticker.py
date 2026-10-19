@@ -22,10 +22,6 @@ NEWS_TOP_HEADLINE_COUNT = 2      # "top headlines only" for the general Toronto 
 TEAM_HEADLINE_COUNT = 2
 NEWS_HEADLINE_MAX_LEN = 70
 
-# Each team searches its own league feed first, then falls back to CBC's
-# general sports feed and the Toronto regional feed - the NBA/MLB league
-# feeds specifically turned out to be too thin on their own to reliably
-# turn up a Raptors or Jays headline.
 GENERAL_SPORTS_FEED = "https://www.cbc.ca/webfeed/rss/rss-sports"
 LEAFS_NEWS_FEEDS    = ["https://www.cbc.ca/webfeed/rss/rss-sports-nhl",
                        GENERAL_SPORTS_FEED, NEWS_FEED]
@@ -34,28 +30,19 @@ RAPTORS_NEWS_FEEDS  = ["https://www.cbc.ca/webfeed/rss/rss-sports-nba",
 JAYS_NEWS_FEEDS     = ["https://www.cbc.ca/webfeed/rss/rss-sports-mlb",
                        GENERAL_SPORTS_FEED, NEWS_FEED]
 
-# TSN publishes a Google-News sitemap for each day's articles (dozens of
-# items, much higher volume than CBC's team feeds) instead of RSS. It's
-# tried first for team news; CBC above is the fallback if TSN is unreachable
-# or has nothing for a team that day.
 TSN_NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9",
           "news": "http://www.google.com/schemas/sitemap-news/0.9"}
 
-# CP24 runs the same Bell Media / Arc Publishing platform as TSN, so it has
-# the identical dated sitemap format - but CP24 is a general Toronto news
-# channel, so only the small slice of its sitemap under a /sport path counts.
-# Sportsnet has no current headline feed I could find (their old scores.json
-# has reportedly broken and changed URL repeatedly since 2017, and it's
-# scores, not headlines, anyway) - left out rather than built on that.
 SPORTS_HEADLINES_COUNT = 5
 TSN_SITEMAP_BASE  = "https://www.tsn.ca/arc/outboundfeeds/sitemap-news"
 CP24_SITEMAP_BASE = "https://www.cp24.com/arc/outboundfeeds/sitemap-news"
 LEAFS_KEYWORDS     = ["leafs", "maple leafs"]
 RAPTORS_KEYWORDS   = ["raptors", "raps"]
 JAYS_KEYWORDS      = ["blue jays", "jays"]
+BILLS_KEYWORDS     = ["bills", "buffalo bills"]
 
 
-ERRORS = []   # fetch failures, written to debug.json
+ERRORS = []    # fetch failures, written to debug.json
 NEWS_STATS = []  # per-feed item/match counts, written to debug.json separately
 
 
@@ -83,9 +70,6 @@ def get_xml(url, headers=None):
 
 # ---------------------------------------------------------------- News (TSN sitemap + CBC RSS)
 def fetch_sitemap_articles(base_url):
-    """Generic reader for the Bell Media / Arc Publishing dated sitemap format
-    (TSN and CP24 both use it): returns a list of
-    {title, date (ISO string), loc (article URL)} dicts, newest first."""
     url = f"{base_url}/{datetime.now(TZ).date().isoformat()}/"
     root = get_xml(url)
     if root is None:
@@ -106,14 +90,11 @@ def fetch_sitemap_articles(base_url):
             "loc": loc_el.text if loc_el is not None else "",
         })
 
-    articles.sort(key=lambda a: a["date"], reverse=True)   # newest first
+    articles.sort(key=lambda a: a["date"], reverse=True)
     return articles
 
 
 def top_sports_headlines(count=SPORTS_HEADLINES_COUNT):
-    """Combines TSN (a pure sports site - every article counts) with CP24's
-    small sports slice (only articles whose URL path includes /sport), sorts
-    by publish time, dedupes by title, and keeps the newest `count`."""
     tsn_articles = fetch_sitemap_articles(TSN_SITEMAP_BASE)
     for a in tsn_articles:
         a["source"] = "TSN"
@@ -124,7 +105,7 @@ def top_sports_headlines(count=SPORTS_HEADLINES_COUNT):
         a["source"] = "CP24"
 
     NEWS_STATS.append(f"[SPORTS HEADLINES] TSN: {len(tsn_articles)} items; "
-                       f"CP24: {len(cp24_articles)} sports items of {len(cp24_all)} total")
+                      f"CP24: {len(cp24_articles)} sports items of {len(cp24_all)} total")
 
     combined = tsn_articles + cp24_articles
     combined.sort(key=lambda a: a["date"], reverse=True)
@@ -146,8 +127,6 @@ def top_sports_headlines(count=SPORTS_HEADLINES_COUNT):
 
 
 def tsn_headline_titles(keywords, count):
-    """TSN's daily Google-News sitemap - much higher volume than CBC's team
-    feeds, but a different, more fragile format (namespaced XML, dated URL)."""
     url = f"https://www.tsn.ca/arc/outboundfeeds/sitemap-news/{datetime.now(TZ).date().isoformat()}/"
     root = get_xml(url)
     if root is None:
@@ -175,9 +154,6 @@ def tsn_headline_titles(keywords, count):
 
 
 def cbc_headline_titles(feed_urls, keywords, count, seen):
-    """Pulls up to `count` headline titles across one or more RSS feeds (tried
-    in order, stopping once `count` is reached), skipping anything already in
-    `seen` (so a story TSN already found isn't repeated)."""
     if isinstance(feed_urls, str):
         feed_urls = [feed_urls]
 
@@ -214,7 +190,6 @@ def cbc_headline_titles(feed_urls, keywords, count, seen):
 
 
 def team_headlines(keywords, count, prefix):
-    """TSN first, CBC's feeds fill in the rest if TSN comes up short."""
     tsn_titles, tsn_items = tsn_headline_titles(keywords, count)
     seen = set(tsn_titles)
 
@@ -228,7 +203,7 @@ def team_headlines(keywords, count, prefix):
 
     tag = f"[{prefix.strip(': ')}]"
     NEWS_STATS.append(f"{tag} TSN: {tsn_items} items checked, {len(tsn_titles)} matched; "
-                       f"CBC: {cbc_items} items checked, {len(titles) - len(tsn_titles)} matched")
+                      f"CBC: {cbc_items} items checked, {len(titles) - len(tsn_titles)} matched")
 
     if not titles:
         return ""
@@ -236,9 +211,7 @@ def team_headlines(keywords, count, prefix):
 
 
 def news():
-    """Top Toronto headlines: CP24's general sitemap (proper timestamps, so
-    tried first) topped up with CBC's Toronto feed if CP24 comes up short."""
-    cp24_articles = fetch_sitemap_articles(CP24_SITEMAP_BASE)   # unfiltered - CP24 is Toronto-general already
+    cp24_articles = fetch_sitemap_articles(CP24_SITEMAP_BASE)
     titles = []
     for a in cp24_articles:
         t = a["title"]
@@ -256,7 +229,7 @@ def news():
         titles += cbc_titles
 
     NEWS_STATS.append(f"[NEWS] CP24: {len(cp24_articles)} items checked, {cp24_matched} matched; "
-                       f"CBC: {cbc_items} items checked, {len(titles) - cp24_matched} matched")
+                      f"CBC: {cbc_items} items checked, {len(titles) - cp24_matched} matched")
 
     if not titles:
         return ""
@@ -274,105 +247,151 @@ def raptors_news():
 def jays_news():
     return team_headlines(JAYS_KEYWORDS, TEAM_HEADLINE_COUNT, "JAYS NEWS: ")
 
-import urllib.request
-import json
-from datetime import datetime
+
+# ---------------------------------------------------------------- Buffalo Bills (ESPN)
+_BILLS_CACHE = None
 
 def get_bills_data():
-    try:
-        # 1. Fetch Bills Schedule from ESPN
-        url = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/2/schedule"
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req, timeout=10) as response:
-            data = json.loads(response.read().decode())
-            
-        events = data.get("events", [])
-        last_game = "LAST: NONE | "
-        next_game = "NEXT: NONE | "
-        
-        for e in events:
-            comp = e["competitions"][0]
-            status_type = comp["status"]["type"]
-            completed = status_type.get("completed", False)
-            state = status_type.get("state", "")
-            date_iso = e.get("date", "")
-            
-            competitors = comp["competitors"]
-            home_team = next((c for c in competitors if c["homeAway"] == "home"), None)
-            away_team = next((c for c in competitors if c["homeAway"] == "away"), None)
-            
-            if home_team and away_team:
-                h_abbr = home_team["team"]["abbreviation"]
-                a_abbr = away_team["team"]["abbreviation"]
+    global _BILLS_CACHE
+    if _BILLS_CACHE is not None:
+        return _BILLS_CACHE
+
+    bills_sched_text = "BILLS: NO DATA | "
+    bills_stand_text = ""
+    bills_news_text = ""
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    }
+
+    # 1. Fetch Bills Schedule & Live Game
+    schedule_urls = [
+        "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/2/schedule?seasontype=2",
+        "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/2/schedule?seasontype=1",
+        "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+    ]
+
+    for url in schedule_urls:
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                data = json.loads(resp.read().decode())
+
+            events = data.get("events", [])
+            if not events:
+                continue
+
+            last_game = ""
+            next_game = ""
+            live_game = ""
+
+            for e in events:
+                name = e.get("name", "")
+                if "scoreboard" in url and "Bills" not in name:
+                    continue
+
+                competitions = e.get("competitions", [])
+                if not competitions:
+                    continue
+                comp = competitions[0]
+
+                status_type = comp.get("status", {}).get("type", {})
+                completed = status_type.get("completed", False)
+                state = status_type.get("state", "")
+                date_iso = e.get("date", "")
+
+                competitors = comp.get("competitors", [])
+                home_team = next((c for c in competitors if c.get("homeAway") == "home"), {})
+                away_team = next((c for c in competitors if c.get("homeAway") == "away"), {})
+
+                h_abbr = home_team.get("team", {}).get("abbreviation", "BUF")
+                a_abbr = away_team.get("team", {}).get("abbreviation", "BUF")
                 h_score = home_team.get("score", "0")
                 a_score = away_team.get("score", "0")
-                
+
                 if state == "in":
                     detail = status_type.get("shortDetail", "LIVE")
-                    next_game = f"BILLS LIVE: {a_abbr} {a_score} @ {h_abbr} {h_score} ({detail}) | "
+                    live_game = f"BILLS LIVE: {a_abbr} {a_score} @ {h_abbr} {h_score} ({detail}) | "
                     break
                 elif completed:
                     last_game = f"LAST: {a_abbr} {a_score} @ {h_abbr} {h_score} (FINAL) | "
-                elif not completed and "NEXT:" not in next_game:
-                    # Parse date/time nicely if possible
+                elif not completed and not next_game:
                     try:
                         dt = datetime.strptime(date_iso[:16], "%Y-%m-%dT%H:%M")
-                        date_str = dt.strftime("%m/%d %I:%M%p")
+                        date_formatted = dt.strftime("%m/%d %I:%M%p")
                     except Exception:
-                        date_str = date_iso[:10]
-                    next_game = f"NEXT: {a_abbr} @ {h_abbr} {date_str} | "
+                        date_formatted = date_iso[:10]
+                    next_game = f"NEXT: {a_abbr} @ {h_abbr} {date_formatted} | "
 
-        bills_schedule_text = f"BILLS {next_game}{last_game}" if not next_game.startswith("BILLS LIVE:") else next_game
-        
-        # 2. Fetch Standings from ESPN
-        standings_url = "https://site.api.espn.com/apis/v2/sports/football/nfl/standings"
-        req_st = urllib.request.Request(standings_url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req_st, timeout=10) as resp_st:
-            st_data = json.loads(resp_st.read().decode())
-            
-        bills_standings_text = ""
-        for group in st_data.get("children", []):
-            if "AFC East" in group.get("name", ""):
+            if live_game:
+                bills_sched_text = live_game
+                break
+            elif next_game or last_game:
+                if not next_game: next_game = "NEXT: NONE | "
+                if not last_game: last_game = "LAST: NONE | "
+                bills_sched_text = f"BILLS {next_game}{last_game}"
+                break
+        except Exception as err:
+            print(f"[Python] Schedule fetch warning for {url}: {err}", file=sys.stderr)
+
+    # 2. Fetch Bills Standings
+    standings_url = "https://site.api.espn.com/apis/v2/sports/football/nfl/standings"
+    try:
+        req = urllib.request.Request(standings_url, headers=headers)
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            st_data = json.loads(resp.read().decode())
+
+        children = st_data.get("children", [])
+        for group in children:
+            g_name = group.get("name", "")
+            if "AFC East" in g_name or "American Football Conference" in g_name:
                 rank = 1
-                for team_entry in group.get("standings", []):
-                    if team_entry["team"]["abbreviation"] == "BUF":
-                        stats = {s["name"]: s["value"] for s in team_entry.get("stats", [])}
+                standings_entries = group.get("standings", {}).get("entries", []) or group.get("standings", [])
+                for team_entry in standings_entries:
+                    team_info = team_entry.get("team", {})
+                    abbr = team_info.get("abbreviation", "")
+                    if abbr == "BUF":
+                        stats_list = team_entry.get("stats", [])
+                        stats = {s.get("name"): s.get("value") for s in stats_list if "name" in s}
                         wins = int(stats.get("wins", 0))
                         losses = int(stats.get("losses", 0))
-                        ordinal = "ST" if rank == 1 else ("ND" if rank == 2 else "TH")
-                        bills_standings_text = f"BILLS {rank}{ordinal} AFC EAST {wins}-{losses} | "
+                        ties = int(stats.get("ties", 0))
+
+                        ordinal = "ST" if rank == 1 else ("ND" if rank == 2 else ("RD" if rank == 3 else "TH"))
+                        tie_str = f"-{ties}" if ties > 0 else ""
+                        bills_stand_text = f"BILLS {rank}{ordinal} AFC EAST {wins}-{losses}{tie_str} | "
                         break
                     rank += 1
-                    
-        return bills_schedule_text, bills_standings_text
-    except Exception as e:
-        print(f"Error fetching Bills data: {e}")
-        return "BILLS: NO DATA | ", ""
+    except Exception as err:
+        print(f"[Python] Standings fetch warning: {err}", file=sys.stderr)
 
-# --- Integration inside your main build script ---
-if __name__ == "__main__":
-    bills_sched, bills_stand = get_bills_data()
+    # 3. Fetch Bills News Headlines (TSN fallback + CBC team headlines)
+    tsn_titles, _ = tsn_headline_titles(BILLS_KEYWORDS, TEAM_HEADLINE_COUNT)
+    seen = set(tsn_titles)
+    bills_news_titles = list(tsn_titles)
+    if len(bills_news_titles) < TEAM_HEADLINE_COUNT:
+        cbc_titles, _ = cbc_headline_titles([GENERAL_SPORTS_FEED, NEWS_FEED], BILLS_KEYWORDS, TEAM_HEADLINE_COUNT - len(bills_news_titles), seen)
+        bills_news_titles += cbc_titles
 
-    # Load or structure your final dictionary
-    output_data = {
-        "news": "TORONTO NEWS HEADLINES...", # Your existing news string variable
-        "leafs_news": "",                   # Your existing Leafs news
-        "jays_news": "",                    # Your existing Jays news
-        "raptors_news": "",                 # Your existing Raptors news
-        "bills": bills_sched,
-        "bills_info": bills_stand
-    }
+    if bills_news_titles:
+        bills_news_text = "BILLS NEWS: " + " | ".join(bills_news_titles) + " | "
 
-    with open("leafs.json", "w") as f:
-        json.dump(output_data, f)
-    print("Successfully updated leafs.json with Bills data.")
+    bills_info_combined = (bills_stand_text + bills_news_text).strip()
+    _BILLS_CACHE = (bills_sched_text, bills_info_combined)
+    return _BILLS_CACHE
+
+
+def bills():
+    sched, _ = get_bills_data()
+    return sched
+
+
+def bills_info():
+    _, info = get_bills_data()
+    return info
 
 
 # ---------------------------------------------------------------- main
-# The LED matrix font only has plain ASCII. Swap common typographic characters
-# for their ASCII look-alikes first (so "Varsho\u2019s" stays "Varsho's" instead of
-# losing the apostrophe), strip accents (Montr\u00e9al -> Montreal), then drop
-# whatever is left.
 _ASCII_SWAPS = {
     "\u2018": "'", "\u2019": "'", "\u201a": "'",
     "\u201c": '"', "\u201d": '"', "\u201e": '"',
@@ -399,24 +418,19 @@ def main():
 
     result = {}
 
-    # Only news headlines are built here now. Scores, schedule and standings
-    # for all three teams are fetched directly by the ESP32 itself (NHL/MLB
-    # aren't blocked from GitHub's servers the way NBA.com/ESPN are, but
-    # there's no reason to route them through a 5-minute batch job when the
-    # device can just ask for them itself every minute). News stays here
-    # because it needs TSN/CP24 sitemap XML parsing, not a good fit for a
-    # microcontroller, and it isn't time-sensitive the way scores are.
     for key, fn in (("news", news),
                      ("leafs_news", leafs_news),
                      ("raptors_news", raptors_news),
-                     ("jays_news", jays_news)):
+                     ("jays_news", jays_news),
+                     ("bills", bills),
+                     ("bills_info", bills_info)):
         try:
             text = clean(fn())
         except Exception as e:
             print(f"{key} failed: {e!r}", file=sys.stderr)
             text = ""
         if not text and isinstance(old.get(key), str):
-            text = old[key]   # keep yesterday's rather than show nothing
+            text = old[key]
         result[key] = text
         print(f"{key}: {text}")
 
@@ -424,10 +438,6 @@ def main():
         json.dump(result, f, indent=2)
         f.write("\n")
 
-    # Separate file: top 5 sports headlines combined from TSN + CP24, sorted
-    # by recency. Kept apart from leafs.json since it's a different kind of
-    # thing (a general sports feed, not per-team ticker text) and other
-    # consumers might want it without also fetching the sports data.
     try:
         headlines = top_sports_headlines()
     except Exception as e:
@@ -443,7 +453,7 @@ def main():
             old_headlines = {}
 
     if not headlines and isinstance(old_headlines.get("headlines"), list):
-        headlines = old_headlines["headlines"]   # keep yesterday's rather than write an empty file
+        headlines = old_headlines["headlines"]
 
     headlines = [{**h, "title": clean(h["title"])} for h in headlines]
     ticker_text = "SPORTS: " + " | ".join(h["title"] for h in headlines) + " | " if headlines else ""
