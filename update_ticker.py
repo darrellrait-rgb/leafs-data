@@ -244,7 +244,11 @@ def raptors_news():
     return team_headlines(RAPTORS_KEYWORDS, TEAM_HEADLINE_COUNT, "RAPTORS NEWS: ")
 
 
-# ---------------------------------------------------------------- Blue Jays / MLB
+def jays_news():
+    return team_headlines(JAYS_KEYWORDS, TEAM_HEADLINE_COUNT, "JAYS NEWS: ")
+
+
+# ---------------------------------------------------------------- Blue Jays / MLB Playoff Fallback
 def get_jays_data():
     headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
     jays_url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=141&hydrate=team"
@@ -296,7 +300,7 @@ def get_jays_data():
     except Exception as err:
         print(f"[Python] Jays fetch warning: {err}", file=sys.stderr)
 
-    # Fallback: If no upcoming Jays games, fetch MLB Playoffs Schedule
+    # Fallback: If no upcoming Jays games, fetch MLB Postseason / Playoff Schedule
     if not jays_sched_text or "NEXT: NONE" in jays_sched_text:
         try:
             playoff_url = "https://statsapi.mlb.com/api/v1/schedule/postseason?sportId=1&hydrate=team"
@@ -342,6 +346,7 @@ def get_jays_data():
 
     return jays_sched_text
 
+
 def jays():
     return get_jays_data()
 
@@ -357,6 +362,7 @@ def extract_score(competitor):
         return str(int(float(score_val)))
     except (ValueError, TypeError):
         return "0"
+
 
 def get_bills_data():
     global _BILLS_CACHE
@@ -529,13 +535,17 @@ def main():
 
     result = {}
 
- for key, fn in (("news", news),
-                     ("leafs_news", leafs_news),
-                     ("raptors_news", raptors_news),
-                     ("jays_news", jays_news),
-                     ("jays", jays),             # <--- Add this wrapper line
-                     ("bills", bills),
-                     ("bills_info", bills_info)):
+    tasks = (
+        ("news", news),
+        ("leafs_news", leafs_news),
+        ("raptors_news", raptors_news),
+        ("jays_news", jays_news),
+        ("jays", jays),
+        ("bills", bills),
+        ("bills_info", bills_info),
+    )
+
+    for key, fn in tasks:
         try:
             text = clean(fn())
         except Exception as e:
