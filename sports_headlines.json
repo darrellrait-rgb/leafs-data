@@ -1,31 +1,31 @@
 {
-  "generated_at": "2026-10-19T19:37:25.143994-04:00",
+  "generated_at": "2026-10-19T20:05:31.993942-04:00",
   "headlines": [
+    {
+      "title": "Japanese slugger Sato seeking a move to MLB",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/mlb/article/japanese-slugger-sato-seeking-a-move-to-mlb/"
+    },
+    {
+      "title": "How will the new NBA lottery rules affect tanking and team totals?",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/betting/article/how-will-the-new-nba-lottery-rules-affect-tanking-and-team-totals/"
+    },
+    {
+      "title": "Report: Grizzlies waiving former first-round pick Clayton Jr.",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/nba/article/report-grizzlies-waiving-former-first-round-pick-clayton-jr-n1-50221787/"
+    },
+    {
+      "title": "NHL Signing Tracker",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/wires/article/nhl-signing-tracker/"
+    },
     {
       "title": "LISTEN LIVE: Sharks vs. Maple Leafs on TSN Radio 1050",
       "source": "TSN",
       "url": "https://www.tsn.ca/wires/article/listen-live-maple-leafs-vs-sharks/"
-    },
-    {
-      "title": "2026-27 Women's Curling Event Schedule",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/curling/article/2026-27-womens-curling-event-schedule/"
-    },
-    {
-      "title": "2026-27 Men's Curling Event Schedule",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/curling/article/2026-27-mens-curling-event-schedule/"
-    },
-    {
-      "title": "Mayfield might not be able to save the Buccaneers' season",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/nfl/article/mayfield-might-not-be-able-to-save-the-buccaneers-season/"
-    },
-    {
-      "title": "Report: Boone returning as Yankees manager in 2027",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/mlb/article/report-boone-returning-as-yankees-manager-in-2027-n1-50222033/"
     }
   ],
-  "ticker": "SPORTS: LISTEN LIVE: Sharks vs. Maple Leafs on TSN Radio 1050 | 2026-27 Women's Curling Event Schedule | 2026-27 Men's Curling Event Schedule | Mayfield might not be able to save the Buccaneers' season | Report: Boone returning as Yankees manager in 2027 | "
+  "ticker": "SPORTS: Japanese slugger Sato seeking a move to MLB | How will the new NBA lottery rules affect tanking and team totals? | Report: Grizzlies waiving former first-round pick Clayton Jr. | NHL Signing Tracker | LISTEN LIVE: Sharks vs. Maple Leafs on TSN Radio 1050 | "
 }
