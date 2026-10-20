@@ -1,11 +1,6 @@
 {
-  "generated_at": "2026-10-19T21:02:06.129649-04:00",
+  "generated_at": "2026-10-19T21:39:34.362757-04:00",
   "headlines": [
-    {
-      "title": "Japanese slugger Sato seeking a move to MLB",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/mlb/article/japanese-slugger-sato-seeking-a-move-to-mlb/"
-    },
     {
       "title": "How will the new NBA lottery rules affect tanking and team totals?",
       "source": "TSN",
@@ -25,7 +20,12 @@
       "title": "LISTEN LIVE: Sharks vs. Maple Leafs on TSN Radio 1050",
       "source": "TSN",
       "url": "https://www.tsn.ca/wires/article/listen-live-maple-leafs-vs-sharks/"
+    },
+    {
+      "title": "2026-27 Women's Curling Event Schedule",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/curling/article/2026-27-womens-curling-event-schedule/"
     }
   ],
-  "ticker": "SPORTS: Japanese slugger Sato seeking a move to MLB | How will the new NBA lottery rules affect tanking and team totals? | Report: Grizzlies waiving former first-round pick Clayton Jr. | NHL Signing Tracker | LISTEN LIVE: Sharks vs. Maple Leafs on TSN Radio 1050 | "
+  "ticker": "SPORTS: How will the new NBA lottery rules affect tanking and team totals? | Report: Grizzlies waiving former first-round pick Clayton Jr. | NHL Signing Tracker | LISTEN LIVE: Sharks vs. Maple Leafs on TSN Radio 1050 | 2026-27 Women's Curling Event Schedule | "
 }
