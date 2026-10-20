@@ -529,10 +529,11 @@ def main():
 
     result = {}
 
-    for key, fn in (("news", news),
+ for key, fn in (("news", news),
                      ("leafs_news", leafs_news),
                      ("raptors_news", raptors_news),
                      ("jays_news", jays_news),
+                     ("jays", jays),             # <--- Add this wrapper line
                      ("bills", bills),
                      ("bills_info", bills_info)):
         try:
