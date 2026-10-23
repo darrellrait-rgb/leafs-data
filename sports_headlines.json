@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T21:05:31.709017-04:00",
+  "generated_at": "2026-10-22T21:44:26.477805-04:00",
   "headlines": [
     {
       "title": "Hamilton hails title leader Antonelli: 'He doesn't need any advice'",
@@ -12,11 +12,6 @@
       "url": "https://www.tsn.ca/motorsports/formula-1/article/verstappen-warns-out-of-control-bumps-at-us-grand-prix-pose-risks-for-drivers-spines-n1-50250024/"
     },
     {
-      "title": "With lockout looming, World Series could be MLB's last games for a wh...",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/mlb/article/with-lockout-looming-world-series-could-be-mlbs-last-games-for-a-while/"
-    },
-    {
       "title": "Hendrickson is set to face Bengals for the first time since signing w...",
       "source": "TSN",
       "url": "https://www.tsn.ca/wires/cp/article/hendrickson-is-set-to-face-bengals-for-the-first-time-since-signing-with-ravens/"
@@ -25,7 +20,12 @@
       "title": "Conners, Silverman one back of leader Blanchet in Bermuda; Hughes T6",
       "source": "TSN",
       "url": "https://www.tsn.ca/golf/pga-tour/article/conners-silverman-one-back-of-leader-blanchet-in-bermuda-hughes-t6/"
+    },
+    {
+      "title": "Mayfield set to make return vs. Panthers, looks to turn around strugg...",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/nfl/article/mayfield-set-to-make-return-vs-panthers-looks-to-turn-around-struggling-buccaneers/"
     }
   ],
-  "ticker": "SPORTS: Hamilton hails title leader Antonelli: 'He doesn't need any advice' | Verstappen warns 'out of control' bumps at U.S. Grand Prix pose risks... | With lockout looming, World Series could be MLB's last games for a wh... | Hendrickson is set to face Bengals for the first time since signing w... | Conners, Silverman one back of leader Blanchet in Bermuda; Hughes T6 | "
+  "ticker": "SPORTS: Hamilton hails title leader Antonelli: 'He doesn't need any advice' | Verstappen warns 'out of control' bumps at U.S. Grand Prix pose risks... | Hendrickson is set to face Bengals for the first time since signing w... | Conners, Silverman one back of leader Blanchet in Bermuda; Hughes T6 | Mayfield set to make return vs. Panthers, looks to turn around strugg... | "
 }
