@@ -1,20 +1,15 @@
 {
-  "generated_at": "2026-10-27T19:15:20.302417-04:00",
+  "generated_at": "2026-10-27T22:24:49.090925-04:00",
   "headlines": [
-    {
-      "title": "Report: Timberwolves' Edwards (knee) to miss up to two months",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/nba/article/report-timberwolves-edwards-knee-to-miss-up-to-two-months-n1-50302115/"
-    },
-    {
-      "title": "Report: Colts trade DE Buckner to 49ers in another major move",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/nfl/article/report-colts-trade-de-buckner-to-49ers-in-another-major-move-n1-50301125/"
-    },
     {
       "title": "Arsenal loses to fourth-tier Fleetwood on penalties in English League...",
       "source": "TSN",
       "url": "https://www.tsn.ca/soccer/article/arsenal-loses-to-fourth-tier-fleetwood-on-penalties-in-english-league-cup-stunner/"
+    },
+    {
+      "title": "Lazio routs 10-man Sassuolo to stay top of Serie A, Mainz dumped out...",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/soccer/article/lazio-routs-10-man-sassuolo-to-stay-top-of-serie-a-mainz-dumped-out-of-german-cup-by-bochum/"
     },
     {
       "title": "Insider Trading: Cap constraints could challenge Leafs; Predators, Sh...",
@@ -25,7 +20,12 @@
       "title": "Raiders activate WR Thornton Jr. off IR, waive DT Laulu",
       "source": "TSN",
       "url": "https://www.tsn.ca/nfl/article/raiders-activate-wr-thornton-jr-off-ir-waive-dt-laulu/"
+    },
+    {
+      "title": "Ex-NBA player Beasley agrees to plead guilty in sports betting case",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/nba/article/ex-nba-player-beasley-agrees-to-plead-guilty-in-sports-betting-case-n1-50301040/"
     }
   ],
-  "ticker": "SPORTS: Report: Timberwolves' Edwards (knee) to miss up to two months | Report: Colts trade DE Buckner to 49ers in another major move | Arsenal loses to fourth-tier Fleetwood on penalties in English League... | Insider Trading: Cap constraints could challenge Leafs; Predators, Sh... | Raiders activate WR Thornton Jr. off IR, waive DT Laulu | "
+  "ticker": "SPORTS: Arsenal loses to fourth-tier Fleetwood on penalties in English League... | Lazio routs 10-man Sassuolo to stay top of Serie A, Mainz dumped out... | Insider Trading: Cap constraints could challenge Leafs; Predators, Sh... | Raiders activate WR Thornton Jr. off IR, waive DT Laulu | Ex-NBA player Beasley agrees to plead guilty in sports betting case | "
 }
