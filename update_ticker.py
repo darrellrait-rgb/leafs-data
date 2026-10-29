@@ -607,9 +607,10 @@ def main():
 
     result = {}
 
-    tasks = (
+tasks = (
         ("news", news),
         ("leafs_news", leafs_news),
+        ("raptors", raptors),           # <--- Add this line here
         ("raptors_news", raptors_news),
         ("jays_news", jays_news),
         ("jays", jays),
