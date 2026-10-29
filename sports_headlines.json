@@ -1,6 +1,11 @@
 {
-  "generated_at": "2026-10-28T19:42:06.746600-04:00",
+  "generated_at": "2026-10-28T20:32:10.272555-04:00",
   "headlines": [
+    {
+      "title": "Bills coach Brady questions NFL disciplinary process after DB Frankli...",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/nfl/article/bills-coach-brady-questions-nfl-disciplinary-process-after-db-franklin-wins-appeal/"
+    },
     {
       "title": "Ballon d'Or winner Kane gets guard of honor from Bayern teammates bef...",
       "source": "TSN",
@@ -10,11 +15,6 @@
       "title": "Olise double sees Bayern cruise past Magdeburg in German Cup as Kane...",
       "source": "TSN",
       "url": "https://www.tsn.ca/soccer/article/olise-double-sees-bayern-cruise-past-magdeburg-in-german-cup-as-kane-rested-n1-50253280/"
-    },
-    {
-      "title": "Study: Estimated 75% of NFL players that died from 2008-23 had CTE",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/nfl/article/study-estimated-75-of-nfl-players-that-died-from-2008-23-had-cte-n1-50311853/"
     },
     {
       "title": "Man City wins penalty shootout to advance in English League Cup",
@@ -27,5 +27,5 @@
       "url": "https://www.tsn.ca/soccer/article/liverpool-beat-chelsea-in-shootout-to-reach-carabao-cup-quarters-n1-50253188/"
     }
   ],
-  "ticker": "SPORTS: Ballon d'Or winner Kane gets guard of honor from Bayern teammates bef... | Olise double sees Bayern cruise past Magdeburg in German Cup as Kane... | Study: Estimated 75% of NFL players that died from 2008-23 had CTE | Man City wins penalty shootout to advance in English League Cup | Liverpool beat Chelsea in shootout to reach Carabao Cup quarters | "
+  "ticker": "SPORTS: Bills coach Brady questions NFL disciplinary process after DB Frankli... | Ballon d'Or winner Kane gets guard of honor from Bayern teammates bef... | Olise double sees Bayern cruise past Magdeburg in German Cup as Kane... | Man City wins penalty shootout to advance in English League Cup | Liverpool beat Chelsea in shootout to reach Carabao Cup quarters | "
 }
