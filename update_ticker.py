@@ -248,116 +248,14 @@ def jays_news():
     return team_headlines(JAYS_KEYWORDS, TEAM_HEADLINE_COUNT, "JAYS NEWS: ")
 
 
-# ---------------------------------------------------------------- Blue Jays / MLB Playoff Fallback
-def get_jays_data():
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-    jays_url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=141&hydrate=team"
-    
-    jays_sched_text = ""
-    try:
-        req = urllib.request.Request(jays_url, headers=headers)
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read().decode())
-            
-        dates = data.get("dates", [])
-        last_game = ""
-        next_game = ""
-        live_game = ""
-        
-        for d in dates:
-            for g in d.get("games", []):
-                status = g.get("status", {}).get("abstractGameState", "")
-                detailed_status = g.get("status", {}).get("detailedState", "")
-                date_iso = g.get("gameDate", "")
-                
-                home = g.get("teams", {}).get("home", {})
-                away = g.get("teams", {}).get("away", {})
-                
-                h_abbr = home.get("team", {}).get("abbreviation", "TOR")
-                a_abbr = away.get("team", {}).get("abbreviation", "TOR")
-                h_score = home.get("score", 0)
-                a_score = away.get("score", 0)
-                
-                if status == "Live":
-                    live_game = f"JAYS LIVE: {a_abbr} {a_score} @ {h_abbr} {h_score} ({detailed_status}) | "
-                    break
-                elif status == "Final":
-                    last_game = f"LAST: {a_abbr} {a_score} @ {h_abbr} {h_score} (FINAL) | "
-                elif status == "Preview" and not next_game:
-                    try:
-                        dt = datetime.strptime(date_iso[:16], "%Y-%m-%dT%H:%M").replace(tzinfo=ZoneInfo("UTC")).astimezone(TZ)
-                        date_formatted = dt.strftime("%m/%d %I:%M%p")
-                    except Exception:
-                        date_formatted = date_iso[:10]
-                    next_game = f"NEXT: {a_abbr} @ {h_abbr} {date_formatted} | "
-
-        if live_game:
-            jays_sched_text = live_game
-        elif next_game or last_game:
-            if not next_game: next_game = "NEXT: NONE | "
-            if not last_game: last_game = "LAST: NONE | "
-            jays_sched_text = f"JAYS {next_game}{last_game}"
-    except Exception as err:
-        print(f"[Python] Jays fetch warning: {err}", file=sys.stderr)
-
-    # Fallback: If no upcoming Jays games, fetch MLB Postseason / Playoff Schedule
-    if not jays_sched_text or "NEXT: NONE" in jays_sched_text:
-        try:
-            playoff_url = "https://statsapi.mlb.com/api/v1/schedule/postseason?sportId=1&hydrate=team"
-            req = urllib.request.Request(playoff_url, headers=headers)
-            with urllib.request.urlopen(req, timeout=10) as resp:
-                p_data = json.loads(resp.read().decode())
-                
-            p_dates = p_data.get("dates", [])
-            p_next = ""
-            p_last = ""
-            
-            for d in p_dates:
-                for g in d.get("games", []):
-                    status = g.get("status", {}).get("abstractGameState", "")
-                    date_iso = g.get("gameDate", "")
-                    home = g.get("teams", {}).get("home", {})
-                    away = g.get("teams", {}).get("away", {})
-                    
-                    h_abbr = home.get("team", {}).get("abbreviation", "")
-                    a_abbr = away.get("team", {}).get("abbreviation", "")
-                    h_score = home.get("score", 0)
-                    a_score = away.get("score", 0)
-                    
-                    if status == "Final":
-                        p_last = f"LAST: {a_abbr} {a_score} @ {h_abbr} {h_score} (FINAL) | "
-                    elif status == "Preview" and not p_next:
-                        try:
-                            dt = datetime.strptime(date_iso[:16], "%Y-%m-%dT%H:%M").replace(tzinfo=ZoneInfo("UTC")).astimezone(TZ)
-                            date_formatted = dt.strftime("%m/%d %I:%M%p")
-                        except Exception:
-                            date_formatted = date_iso[:10]
-                        p_next = f"NEXT: {a_abbr} @ {h_abbr} {date_formatted} | "
-
-            if p_next or p_last:
-                if not p_next: p_next = "NEXT: SEASON OVER | "
-                if not p_last: p_last = ""
-                jays_sched_text = f"MLB PLAYOFFS {p_next}{p_last}"
-        except Exception as err:
-            print(f"[Python] Playoff fetch warning: {err}", file=sys.stderr)
-
-    if not jays_sched_text or "NEXT: NONE" in jays_sched_text:
-        jays_sched_text = "JAYS: OFFSEASON | "
-
-    return jays_sched_text
-
-
-def jays():
-    return get_jays_data()
-
-# ---------------------------------------------------------------- Toronto Raptors (ESPN)
+# ---------------------------------------------------------------- Raptors (ESPN NBA)
 def get_raptors_data():
     raps_sched_text = "RAPTORS: NO DATA | "
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
     url = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/tor/schedule"
-    
+
     try:
         req = urllib.request.Request(url, headers=headers)
         with urllib.request.urlopen(req, timeout=10) as resp:
@@ -389,7 +287,7 @@ def get_raptors_data():
 
             h_abbr = home_team.get("team", {}).get("abbreviation", "TOR")
             a_abbr = away_team.get("team", {}).get("abbreviation", "TOR")
-            
+
             h_score = extract_score(home_team)
             a_score = extract_score(away_team)
 
@@ -420,9 +318,114 @@ def get_raptors_data():
 
     return raps_sched_text
 
+
 def raptors():
     return get_raptors_data()
-    
+
+
+# ---------------------------------------------------------------- Blue Jays / MLB Playoff Fallback
+def get_jays_data():
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+    jays_url = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=141&hydrate=team"
+
+    jays_sched_text = ""
+    try:
+        req = urllib.request.Request(jays_url, headers=headers)
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+
+        dates = data.get("dates", [])
+        last_game = ""
+        next_game = ""
+        live_game = ""
+
+        for d in dates:
+            for g in d.get("games", []):
+                status = g.get("status", {}).get("abstractGameState", "")
+                detailed_status = g.get("status", {}).get("detailedState", "")
+                date_iso = g.get("gameDate", "")
+
+                home = g.get("teams", {}).get("home", {})
+                away = g.get("teams", {}).get("away", {})
+
+                h_abbr = home.get("team", {}).get("abbreviation", "TOR")
+                a_abbr = away.get("team", {}).get("abbreviation", "TOR")
+                h_score = home.get("score", 0)
+                a_score = away.get("score", 0)
+
+                if status == "Live":
+                    live_game = f"JAYS LIVE: {a_abbr} {a_score} @ {h_abbr} {h_score} ({detailed_status}) | "
+                    break
+                elif status == "Final":
+                    last_game = f"LAST: {a_abbr} {a_score} @ {h_abbr} {h_score} (FINAL) | "
+                elif status == "Preview" and not next_game:
+                    try:
+                        dt = datetime.strptime(date_iso[:16], "%Y-%m-%dT%H:%M").replace(tzinfo=ZoneInfo("UTC")).astimezone(TZ)
+                        date_formatted = dt.strftime("%m/%d %I:%M%p")
+                    except Exception:
+                        date_formatted = date_iso[:10]
+                    next_game = f"NEXT: {a_abbr} @ {h_abbr} {date_formatted} | "
+
+        if live_game:
+            jays_sched_text = live_game
+        elif next_game or last_game:
+            if not next_game: next_game = "NEXT: NONE | "
+            if not last_game: last_game = "LAST: NONE | "
+            jays_sched_text = f"JAYS {next_game}{last_game}"
+    except Exception as err:
+        print(f"[Python] Jays fetch warning: {err}", file=sys.stderr)
+
+    # Fallback: If no upcoming Jays games, fetch MLB Postseason / Playoff Schedule
+    if not jays_sched_text or "NEXT: NONE" in jays_sched_text:
+        try:
+            playoff_url = "https://statsapi.mlb.com/api/v1/schedule/postseason?sportId=1&hydrate=team"
+            req = urllib.request.Request(playoff_url, headers=headers)
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                p_data = json.loads(resp.read().decode())
+
+            p_dates = p_data.get("dates", [])
+            p_next = ""
+            p_last = ""
+
+            for d in p_dates:
+                for g in d.get("games", []):
+                    status = g.get("status", {}).get("abstractGameState", "")
+                    date_iso = g.get("gameDate", "")
+                    home = g.get("teams", {}).get("home", {})
+                    away = g.get("teams", {}).get("away", {})
+
+                    h_abbr = home.get("team", {}).get("abbreviation", "")
+                    a_abbr = away.get("team", {}).get("abbreviation", "")
+                    h_score = home.get("score", 0)
+                    a_score = away.get("score", 0)
+
+                    if status == "Final":
+                        p_last = f"LAST: {a_abbr} {a_score} @ {h_abbr} {h_score} (FINAL) | "
+                    elif status == "Preview" and not p_next:
+                        try:
+                            dt = datetime.strptime(date_iso[:16], "%Y-%m-%dT%H:%M").replace(tzinfo=ZoneInfo("UTC")).astimezone(TZ)
+                            date_formatted = dt.strftime("%m/%d %I:%M%p")
+                        except Exception:
+                            date_formatted = date_iso[:10]
+                        p_next = f"NEXT: {a_abbr} @ {h_abbr} {date_formatted} | "
+
+            if p_next or p_last:
+                if not p_next: p_next = "NEXT: SEASON OVER | "
+                if not p_last: p_last = ""
+                jays_sched_text = f"MLB PLAYOFFS {p_next}{p_last}"
+        except Exception as err:
+            print(f"[Python] Playoff fetch warning: {err}", file=sys.stderr)
+
+    if not jays_sched_text or "NEXT: NONE" in jays_sched_text:
+        jays_sched_text = "JAYS: OFFSEASON | "
+
+    return jays_sched_text
+
+
+def jays():
+    return get_jays_data()
+
+
 # ---------------------------------------------------------------- Buffalo Bills (ESPN)
 _BILLS_CACHE = None
 
@@ -444,7 +447,7 @@ def get_bills_data():
     bills_sched_text = "BILLS: NO DATA | "
     bills_stand_text = ""
     bills_news_text = ""
-    
+
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
@@ -492,7 +495,7 @@ def get_bills_data():
 
                 h_abbr = home_team.get("team", {}).get("abbreviation", "BUF")
                 a_abbr = away_team.get("team", {}).get("abbreviation", "BUF")
-                
+
                 h_score = extract_score(home_team)
                 a_score = extract_score(away_team)
 
@@ -607,10 +610,10 @@ def main():
 
     result = {}
 
-tasks = (
+    tasks = (
         ("news", news),
         ("leafs_news", leafs_news),
-        ("raptors", raptors),           # <--- Add this line here
+        ("raptors", raptors),
         ("raptors_news", raptors_news),
         ("jays_news", jays_news),
         ("jays", jays),
