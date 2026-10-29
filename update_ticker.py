@@ -350,7 +350,79 @@ def get_jays_data():
 def jays():
     return get_jays_data()
 
+# ---------------------------------------------------------------- Toronto Raptors (ESPN)
+def get_raptors_data():
+    raps_sched_text = "RAPTORS: NO DATA | "
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    }
+    url = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/teams/tor/schedule"
+    
+    try:
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
 
+        events = data.get("events", [])
+        if not events:
+            return raps_sched_text
+
+        last_game = ""
+        best_last_date = ""
+        next_game = ""
+        live_game = ""
+
+        for e in events:
+            competitions = e.get("competitions", [])
+            if not competitions:
+                continue
+            comp = competitions[0]
+
+            status_type = comp.get("status", {}).get("type", {})
+            completed = status_type.get("completed", False)
+            state = status_type.get("state", "")
+            date_iso = e.get("date", "")
+
+            competitors = comp.get("competitors", [])
+            home_team = next((c for c in competitors if c.get("homeAway") == "home"), {})
+            away_team = next((c for c in competitors if c.get("homeAway") == "away"), {})
+
+            h_abbr = home_team.get("team", {}).get("abbreviation", "TOR")
+            a_abbr = away_team.get("team", {}).get("abbreviation", "TOR")
+            
+            h_score = extract_score(home_team)
+            a_score = extract_score(away_team)
+
+            if state == "in":
+                detail = status_type.get("shortDetail", "LIVE")
+                live_game = f"RAPTORS LIVE: {a_abbr} {a_score} @ {h_abbr} {h_score} ({detail}) | "
+                break
+            elif completed:
+                if not best_last_date or date_iso > best_last_date:
+                    best_last_date = date_iso
+                    last_game = f"LAST: {a_abbr} {a_score} @ {h_abbr} {h_score} (FINAL) | "
+            elif not completed and not next_game:
+                try:
+                    dt = datetime.strptime(date_iso[:16], "%Y-%m-%dT%H:%M").replace(tzinfo=ZoneInfo("UTC")).astimezone(TZ)
+                    date_formatted = dt.strftime("%m/%d %I:%M%p")
+                except Exception:
+                    date_formatted = date_iso[:10]
+                next_game = f"NEXT: {a_abbr} @ {h_abbr} {date_formatted} | "
+
+        if live_game:
+            raps_sched_text = live_game
+        elif next_game or last_game:
+            if not next_game: next_game = "NEXT: NONE | "
+            if not last_game: last_game = "LAST: NONE | "
+            raps_sched_text = f"RAPTORS {next_game}{last_game}"
+    except Exception as err:
+        print(f"[Python] Raptors schedule fetch warning: {err}", file=sys.stderr)
+
+    return raps_sched_text
+
+def raptors():
+    return get_raptors_data()
+    
 # ---------------------------------------------------------------- Buffalo Bills (ESPN)
 _BILLS_CACHE = None
 
