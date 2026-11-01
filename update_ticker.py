@@ -170,6 +170,78 @@ def clean(s):
     for bad, good in _ASCII_SWAPS.items(): s = s.replace(bad, good)
     return unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
 
+BILLS_SCHEDULE_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/buf/schedule"
+
+def _espn_score(competitor):
+    sc = competitor.get("score")
+    if isinstance(sc, dict):
+        sc = sc.get("displayValue", sc.get("value"))
+    try:
+        return int(float(sc))
+    except (TypeError, ValueError):
+        return 0
+
+def _espn_json(url):
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=30) as r:
+        return json.load(r)
+
+def bills_schedule(events=None):
+    """Text for the Bills ticker segment, same shape the sketch used to build
+    itself: 'BILLS LAST: BAL @ BUF 20-27 | NEXT: BAL @ BUF 11/01 1:00PM | '.
+    Regular season plus playoffs (seasontype 2 and 3). Returns "" if ESPN gave
+    nothing, so main() keeps the previous value."""
+    if events is None:
+        events = []
+        for season_type in (2, 3):
+            try:
+                events += _espn_json(f"{BILLS_SCHEDULE_URL}?seasontype={season_type}").get("events", [])
+            except Exception as e:
+                print(f"bills schedule (seasontype={season_type}) failed: {e!r}", file=sys.stderr)
+    if not events:
+        return ""
+
+    def parse(e):
+        comp = e["competitions"][0]
+        status = comp["status"]["type"]
+        comps = comp["competitors"]
+        home = next(c for c in comps if c.get("homeAway") == "home")
+        away = next(c for c in comps if c.get("homeAway") == "away")
+        when = datetime.fromisoformat(e["date"].replace("Z", "+00:00")).astimezone(TZ)
+        return {
+            "when": when,
+            "state": status.get("state", ""),
+            "completed": bool(status.get("completed")),
+            "detail": status.get("shortDetail", "LIVE"),
+            "h": home["team"]["abbreviation"], "a": away["team"]["abbreviation"],
+            "hs": _espn_score(home), "as": _espn_score(away),
+        }
+
+    games = []
+    for e in events:
+        try:
+            games.append(parse(e))
+        except Exception as ex:
+            print(f"bills: skipped an event: {ex!r}", file=sys.stderr)
+    games.sort(key=lambda g: g["when"])
+
+    last = nxt = ""
+    for g in games:
+        line = f"{g['a']} {g['as']} @ {g['h']} {g['hs']}"
+        if g["state"] == "in":
+            nxt = f"LIVE: {line} ({g['detail']}) | "
+            break
+        if g["completed"] or g["state"] == "post":
+            last = f"LAST: {line} | "
+        elif not nxt:
+            t = g["when"]
+            h12 = t.hour % 12 or 12
+            nxt = (f"NEXT: {g['a']} @ {g['h']} {t:%m/%d} "
+                   f"{h12}:{t.minute:02d}{'PM' if t.hour >= 12 else 'AM'} | ")
+    if not nxt and not last:
+        return ""
+    return "BILLS " + last + (nxt or "NEXT: NONE | ")
+
 def main():
     old = {}
     if os.path.exists(OUT_FILE):
@@ -183,6 +255,7 @@ def main():
         ("leafs_news", leafs_news),
         ("raptors_news", raptors_news),
         ("jays_news", jays_news),
+        ("bills_schedule", bills_schedule),
     )
 
     for key, fn in tasks:
