@@ -23,43 +23,9 @@ jobs:
       - name: Run scraper script
         run: python update_ticker.py
 
-      # Pulls ESPN's NFL scoreboard for a date window (a few weeks back through the
-      # end of the season) and keeps only Buffalo: the most recent finished game
-      # plus the next or live one. continue-on-error: if ESPN blocks GitHub (403),
-      # only this step fails and the commit step below still runs.
-      - name: Trim Bills games
-        continue-on-error: true
-        run: |
-          FROM=$(date -u -d '-21 days' +%Y%m%d)
-          TO=$(date -u -d '+75 days' +%Y%m%d)
-          curl -fsS -A "Mozilla/5.0" \
-            "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${FROM}-${TO}&limit=1000" \
-            -o sb.json
-          jq -c '[ .events[]
-                   | .competitions[0] as $c
-                   | ($c.competitors[] | select(.homeAway=="home")) as $h
-                   | ($c.competitors[] | select(.homeAway=="away")) as $a
-                   | select($h.team.abbreviation=="BUF" or $a.team.abbreviation=="BUF")
-                   | { state: $c.status.type.state,
-                       completed: $c.status.type.completed,
-                       date: .date,
-                       detail: $c.status.type.shortDetail,
-                       away: $a.team.abbreviation,
-                       awayScore: ($a.score | tonumber? // 0),
-                       home: $h.team.abbreviation,
-                       homeScore: ($h.score | tonumber? // 0) }
-                 ] | sort_by(.date)
-                   | { games: ( [ (map(select(.completed)) | last),
-                                  (map(select(.completed | not)) | first) ]
-                                | map(select(. != null)) ) }' sb.json > bills.tmp
-          mv bills.tmp bills.json
-          rm -f sb.json
-          cat bills.json
-
       - name: Commit and push changes if any
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add leafs.json
-          if [ -f bills.json ]; then git add bills.json; fi
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update ticker data [skip ci]" && git push)
+          git diff --staged --quiet || (git commit -m "Auto-update ticker data [skip ci]" && git push)
