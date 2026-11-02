@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T19:40:48.113126-05:00",
+  "generated_at": "2026-11-01T20:34:01.406383-05:00",
   "headlines": [
     {
       "title": "WATCH LIVE: NSL Semifinal: Vancouver vs. Montreal - First leg",
@@ -12,11 +12,6 @@
       "url": "https://www.tsn.ca/figure-skating/article/japans-shimada-wins-gold-at-skate-canada-international/"
     },
     {
-      "title": "Mbappe scores again as Real Madrid wins easily, Lazio needs late winn...",
-      "source": "TSN",
-      "url": "https://www.tsn.ca/soccer/article/mbappe-scores-again-as-real-madrid-wins-easily-lazio-needs-late-winner-to-go-top-in-italy/"
-    },
-    {
       "title": "Tatum scores 32, George adds 10 in fourth as Celtics win against Magic",
       "source": "TSN",
       "url": "https://www.tsn.ca/nba/article/tatum-scores-32-george-adds-10-in-fourth-as-celtics-win-against-magic/"
@@ -25,7 +20,12 @@
       "title": "Wild gets early offence and snaps Capitals three-game winning streak",
       "source": "TSN",
       "url": "https://www.tsn.ca/nhl/article/wild-gets-early-offence-and-snaps-capitals-three-game-winning-streak/"
+    },
+    {
+      "title": "FOLLOW LIVE: Raptors vs. Lakers",
+      "source": "TSN",
+      "url": "https://www.tsn.ca/wires/article/follow-live-raptors-vs-lakers/"
     }
   ],
-  "ticker": "SPORTS: WATCH LIVE: NSL Semifinal: Vancouver vs. Montreal - First leg | Japan's Shimada wins gold at Skate Canada International | Mbappe scores again as Real Madrid wins easily, Lazio needs late winn... | Tatum scores 32, George adds 10 in fourth as Celtics win against Magic | Wild gets early offence and snaps Capitals three-game winning streak | "
+  "ticker": "SPORTS: WATCH LIVE: NSL Semifinal: Vancouver vs. Montreal - First leg | Japan's Shimada wins gold at Skate Canada International | Tatum scores 32, George adds 10 in fourth as Celtics win against Magic | Wild gets early offence and snaps Capitals three-game winning streak | FOLLOW LIVE: Raptors vs. Lakers | "
 }
