@@ -23,9 +23,37 @@ jobs:
       - name: Run scraper script
         run: python update_ticker.py
 
+      # Trims ESPN's ~214KB NFL scoreboard down to Buffalo's game only.
+      # continue-on-error: if ESPN blocks GitHub (403), this step fails on its own
+      # without stopping the commit step below, so leafs/jays/headlines still update.
+      - name: Trim Bills game
+        continue-on-error: true
+        run: |
+          curl -fsS -A "Mozilla/5.0" \
+            "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard" -o sb.json
+          jq -c '[ .events[]
+                   | .competitions[0] as $c
+                   | ($c.competitors[] | select(.homeAway=="home")) as $h
+                   | ($c.competitors[] | select(.homeAway=="away")) as $a
+                   | select($h.team.abbreviation=="BUF" or $a.team.abbreviation=="BUF")
+                   | { found: true,
+                       state: $c.status.type.state,
+                       completed: $c.status.type.completed,
+                       date: .date,
+                       detail: $c.status.type.shortDetail,
+                       away: $a.team.abbreviation,
+                       awayScore: ($a.score | tonumber? // 0),
+                       home: $h.team.abbreviation,
+                       homeScore: ($h.score | tonumber? // 0) }
+                 ] | .[0] // {found: false}' sb.json > bills.tmp
+          mv bills.tmp bills.json
+          rm -f sb.json
+          cat bills.json
+
       - name: Commit and push changes if any
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add leafs.json sports_headlines.json
+          if [ -f bills.json ]; then git add bills.json; fi
           git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update ticker data [skip ci]" && git push)
