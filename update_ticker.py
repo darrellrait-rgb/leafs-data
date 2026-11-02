@@ -30,8 +30,6 @@ JAYS_NEWS_FEEDS     = ["https://www.cbc.ca/webfeed/rss/rss-sports-mlb", GENERAL_
 TSN_NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9",
           "news": "http://www.google.com/schemas/sitemap-news/0.9"}
 
-SPORTS_HEADLINES_COUNT = 5
-TSN_SITEMAP_BASE  = "https://www.tsn.ca/arc/outboundfeeds/sitemap-news"
 CP24_SITEMAP_BASE = "https://www.cp24.com/arc/outboundfeeds/sitemap-news"
 LEAFS_KEYWORDS     = ["leafs", "maple leafs"]
 RAPTORS_KEYWORDS   = ["raptors", "raps"]
@@ -68,26 +66,6 @@ def fetch_sitemap_articles(base_url):
         })
     articles.sort(key=lambda a: a["date"], reverse=True)
     return articles
-
-def top_sports_headlines(count=SPORTS_HEADLINES_COUNT):
-    tsn_articles = fetch_sitemap_articles(TSN_SITEMAP_BASE)
-    for a in tsn_articles: a["source"] = "TSN"
-    cp24_all = fetch_sitemap_articles(CP24_SITEMAP_BASE)
-    cp24_articles = [a for a in cp24_all if "/sport" in a["loc"].lower()]
-    for a in cp24_articles: a["source"] = "CP24"
-    combined = tsn_articles + cp24_articles
-    combined.sort(key=lambda a: a["date"], reverse=True)
-    seen = set()
-    result = []
-    for a in combined:
-        if a["title"] in seen: continue
-        seen.add(a["title"])
-        title = a["title"]
-        if len(title) > NEWS_HEADLINE_MAX_LEN:
-            title = title[:NEWS_HEADLINE_MAX_LEN - 1].rstrip() + "\u2026"
-        result.append({"title": title, "source": a["source"], "url": a["loc"]})
-        if len(result) >= count: break
-    return result
 
 def tsn_headline_titles(keywords, count):
     url = f"https://www.tsn.ca/arc/outboundfeeds/sitemap-news/{datetime.now(TZ).date().isoformat()}/"
@@ -269,25 +247,6 @@ def main():
 
     with open(OUT_FILE, "w") as f:
         json.dump(result, f, indent=2)
-        f.write("\n")
-
-    try: headlines = top_sports_headlines()
-    except Exception: headlines = []
-
-    old_headlines = {}
-    if os.path.exists("sports_headlines.json"):
-        try:
-            with open("sports_headlines.json") as f: old_headlines = json.load(f)
-        except Exception: pass
-
-    if not headlines and isinstance(old_headlines.get("headlines"), list):
-        headlines = old_headlines["headlines"]
-
-    headlines = [{**h, "title": clean(h["title"])} for h in headlines]
-    ticker_text = "SPORTS: " + " | ".join(h["title"] for h in headlines) + " | " if headlines else ""
-
-    with open("sports_headlines.json", "w") as f:
-        json.dump({"generated_at": datetime.now(TZ).isoformat(), "headlines": headlines, "ticker": ticker_text}, f, indent=2)
         f.write("\n")
 
 if __name__ == "__main__":
