@@ -164,18 +164,53 @@ def _espn_json(url):
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.load(r)
 
+def bills_events():
+    """Buffalo's regular-season and playoff events from ESPN (empty list on failure)."""
+    events = []
+    for season_type in (2, 3):
+        try:
+            events += _espn_json(f"{BILLS_SCHEDULE_URL}?seasontype={season_type}").get("events", [])
+        except Exception as e:
+            print(f"bills schedule (seasontype={season_type}) failed: {e!r}", file=sys.stderr)
+    return events
+
+def bills_game(events):
+    """The one game the device should poll for a live score: the game in progress,
+    otherwise the next one that hasn't finished. Returns {} when there isn't one
+    (offseason), so the device stops polling."""
+    best = None
+    for e in sorted(events, key=lambda e: e.get("date", "")):
+        try:
+            comp = e["competitions"][0]
+            status = comp["status"]["type"]
+            if status.get("state") == "post" or status.get("completed"):
+                continue
+            comps = comp["competitors"]
+            home = next(c for c in comps if c.get("homeAway") == "home")
+            away = next(c for c in comps if c.get("homeAway") == "away")
+            start = datetime.fromisoformat(e["date"].replace("Z", "+00:00"))
+            game = {
+                "id": str(e["id"]),
+                "start": int(start.timestamp()),
+                "home": home["team"]["abbreviation"], "homeId": str(home["team"]["id"]),
+                "away": away["team"]["abbreviation"], "awayId": str(away["team"]["id"]),
+            }
+        except Exception as ex:
+            print(f"bills_game: skipped an event: {ex!r}", file=sys.stderr)
+            continue
+        if status.get("state") == "in":
+            return game
+        if best is None:
+            best = game
+    return best or {}
+
 def bills_schedule(events=None):
     """Text for the Bills ticker segment, same shape the sketch used to build
     itself: 'BILLS LAST: BAL @ BUF 20-27 | NEXT: BAL @ BUF 11/01 1:00PM | '.
     Regular season plus playoffs (seasontype 2 and 3). Returns "" if ESPN gave
     nothing, so main() keeps the previous value."""
     if events is None:
-        events = []
-        for season_type in (2, 3):
-            try:
-                events += _espn_json(f"{BILLS_SCHEDULE_URL}?seasontype={season_type}").get("events", [])
-            except Exception as e:
-                print(f"bills schedule (seasontype={season_type}) failed: {e!r}", file=sys.stderr)
+        events = bills_events()
     if not events:
         return ""
 
@@ -228,12 +263,13 @@ def main():
         except Exception: old = {}
 
     result = {}
+    bills_ev = bills_events()      # fetched once, used for both the text and the live-game hand-off
     tasks = (
         ("news", news),
         ("leafs_news", leafs_news),
         ("raptors_news", raptors_news),
         ("jays_news", jays_news),
-        ("bills_schedule", bills_schedule),
+        ("bills_schedule", lambda: bills_schedule(bills_ev)),
     )
 
     for key, fn in tasks:
@@ -244,6 +280,14 @@ def main():
         if not text and isinstance(old.get(key), str): text = old[key]
         result[key] = text
         print(f"{key}: {text}")
+
+    # Which game the device should poll for live scores. If ESPN gave nothing at all,
+    # keep the old value; if it answered but there's no upcoming game, {} turns polling off.
+    if bills_ev:
+        result["bills_game"] = bills_game(bills_ev)
+    elif isinstance(old.get("bills_game"), dict):
+        result["bills_game"] = old["bills_game"]
+    print(f"bills_game: {result.get('bills_game')}")
 
     with open(OUT_FILE, "w") as f:
         json.dump(result, f, indent=2)
