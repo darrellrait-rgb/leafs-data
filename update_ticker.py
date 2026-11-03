@@ -26,6 +26,7 @@ GENERAL_SPORTS_FEED = "https://www.cbc.ca/webfeed/rss/rss-sports"
 LEAFS_NEWS_FEEDS    = ["https://www.cbc.ca/webfeed/rss/rss-sports-nhl", GENERAL_SPORTS_FEED, NEWS_FEED]
 RAPTORS_NEWS_FEEDS  = ["https://www.cbc.ca/webfeed/rss/rss-sports-nba", GENERAL_SPORTS_FEED, NEWS_FEED]
 JAYS_NEWS_FEEDS     = ["https://www.cbc.ca/webfeed/rss/rss-sports-mlb", GENERAL_SPORTS_FEED, NEWS_FEED]
+BILLS_NEWS_FEEDS    = [GENERAL_SPORTS_FEED]
 
 TSN_NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9",
           "news": "http://www.google.com/schemas/sitemap-news/0.9"}
@@ -112,7 +113,7 @@ def team_headlines(keywords, count, prefix):
     seen = set(tsn_titles)
     titles = list(tsn_titles)
     if len(titles) < count:
-        feeds = {"LEAFS": LEAFS_NEWS_FEEDS, "RAPTORS": RAPTORS_NEWS_FEEDS, "JAYS": JAYS_NEWS_FEEDS}
+        feeds = {"LEAFS": LEAFS_NEWS_FEEDS, "RAPTORS": RAPTORS_NEWS_FEEDS, "JAYS": JAYS_NEWS_FEEDS, "BILLS": BILLS_NEWS_FEEDS}
         feed_urls = feeds.get(prefix.split()[0], [GENERAL_SPORTS_FEED, NEWS_FEED])
         cbc_titles, _ = cbc_headline_titles(feed_urls, keywords, count - len(titles), seen)
         titles += cbc_titles
@@ -136,6 +137,7 @@ def news():
 def leafs_news(): return team_headlines(LEAFS_KEYWORDS, TEAM_HEADLINE_COUNT, "LEAFS NEWS: ")
 def raptors_news(): return team_headlines(RAPTORS_KEYWORDS, TEAM_HEADLINE_COUNT, "RAPTORS NEWS: ")
 def jays_news(): return team_headlines(JAYS_KEYWORDS, TEAM_HEADLINE_COUNT, "JAYS NEWS: ")
+def bills_news(): return team_headlines(BILLS_KEYWORDS, TEAM_HEADLINE_COUNT, "BILLS NEWS: ")
 
 _ASCII_SWAPS = {
     "\u2018": "'", "\u2019": "'", "\u201a": "'",
@@ -269,6 +271,7 @@ def main():
         ("leafs_news", leafs_news),
         ("raptors_news", raptors_news),
         ("jays_news", jays_news),
+        ("bills_news", bills_news),
         ("bills_schedule", lambda: bills_schedule(bills_ev)),
     )
 
