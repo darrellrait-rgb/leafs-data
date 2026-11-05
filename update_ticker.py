@@ -3,7 +3,9 @@ import json
 import os
 import re
 import sys
+import time
 import unicodedata
+import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime
@@ -151,11 +153,39 @@ def jays_news(): return team_headlines(JAYS_KEYWORDS, TEAM_HEADLINE_COUNT, "JAYS
 def bills_news(): return team_headlines(BILLS_KEYWORDS, TEAM_HEADLINE_COUNT, "BILLS NEWS: ")
 
 
+def fetch_rugby_xml():
+    """Fetch the RuckMob feed with a few patient retries. Unlike get_xml(), this says
+    exactly which HTTP status came back, and backs off (honoring Retry-After) when the
+    site rate-limits us (429/503). A 403 is not retried - that's a block, not a blip."""
+    for attempt in range(3):
+        try:
+            req = urllib.request.Request(RUGBY_FEED, headers=BROWSER_HEADERS)
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return ET.fromstring(r.read())
+        except urllib.error.HTTPError as e:
+            print(f"rugby: HTTP {e.code} {e.reason} (attempt {attempt + 1}/3)", file=sys.stderr)
+            if e.code in (429, 503) and attempt < 2:
+                try:
+                    wait = int(e.headers.get("Retry-After", ""))
+                except ValueError:
+                    wait = 15 * (attempt + 1)
+                time.sleep(min(max(wait, 5), 60))
+                continue
+            return None
+        except Exception as e:
+            print(f"rugby: fetch error {e!r} (attempt {attempt + 1}/3)", file=sys.stderr)
+            if attempt < 2:
+                time.sleep(5)
+                continue
+            return None
+    return None
+
+
 def rugby():
     """Latest St. Bonaventure women's rugby results from RuckMob, e.g.
     "WOMEN'S RUGBY: ST BONA 31-38 LANDER - NCR 1 | ... | ".
     Returns "" on failure so main() keeps the previous value."""
-    root = get_xml(RUGBY_FEED)
+    root = fetch_rugby_xml()
     if root is None:
         return ""
     titles = []
@@ -169,6 +199,7 @@ def rugby():
         titles.append(t)
         if len(titles) >= RUGBY_RESULT_COUNT:
             break
+    print(f"rugby: parsed {len(titles)} result(s)", file=sys.stderr)
     if not titles:
         return ""
     return "WOMEN'S RUGBY: " + " | ".join(titles) + " | "
