@@ -3,9 +3,7 @@ import json
 import os
 import re
 import sys
-import time
 import unicodedata
-import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime
@@ -38,11 +36,6 @@ LEAFS_KEYWORDS     = ["leafs", "maple leafs"]
 RAPTORS_KEYWORDS   = ["raptors", "raps"]
 JAYS_KEYWORDS      = ["blue jays", "jays"]
 BILLS_KEYWORDS     = ["bills", "buffalo bills"]
-
-# St. Bonaventure women's rugby results, from RuckMob's RSS feed (newest first)
-RUGBY_FEED = "https://ruckmob.com/teams/st-bonaventure-university-womens/feed.xml"
-RUGBY_RESULT_COUNT = 3
-RUGBY_STATUS = "not run"   # written to leafs.json as "rugby_status" so a failure is visible in the file itself
 
 
 def get_xml(url, headers=None):
@@ -154,71 +147,11 @@ def jays_news(): return team_headlines(JAYS_KEYWORDS, TEAM_HEADLINE_COUNT, "JAYS
 def bills_news(): return team_headlines(BILLS_KEYWORDS, TEAM_HEADLINE_COUNT, "BILLS NEWS: ")
 
 
-def fetch_rugby_xml():
-    """Fetch the RuckMob feed with a few patient retries. Unlike get_xml(), this says
-    exactly which HTTP status came back, and backs off (honoring Retry-After) when the
-    site rate-limits us (429/503). A 403 is not retried - that's a block, not a blip."""
-    global RUGBY_STATUS
-    for attempt in range(3):
-        try:
-            req = urllib.request.Request(RUGBY_FEED, headers=BROWSER_HEADERS)
-            with urllib.request.urlopen(req, timeout=30) as r:
-                root = ET.fromstring(r.read())
-                RUGBY_STATUS = "fetched ok"
-                return root
-        except urllib.error.HTTPError as e:
-            RUGBY_STATUS = f"HTTP {e.code} {e.reason}"
-            print(f"rugby: HTTP {e.code} {e.reason} (attempt {attempt + 1}/3)", file=sys.stderr)
-            if e.code in (429, 503) and attempt < 2:
-                try:
-                    wait = int(e.headers.get("Retry-After", ""))
-                except ValueError:
-                    wait = 15 * (attempt + 1)
-                time.sleep(min(max(wait, 5), 60))
-                continue
-            return None
-        except Exception as e:
-            RUGBY_STATUS = f"fetch error {e!r}"[:120]
-            print(f"rugby: fetch error {e!r} (attempt {attempt + 1}/3)", file=sys.stderr)
-            if attempt < 2:
-                time.sleep(5)
-                continue
-            return None
-    return None
-
-
-def rugby():
-    """Latest St. Bonaventure women's rugby results from RuckMob, e.g.
-    "WOMEN'S RUGBY: ST BONA 31-38 LANDER - NCR 1 | ... | ".
-    Returns "" on failure so main() keeps the previous value."""
-    global RUGBY_STATUS
-    root = fetch_rugby_xml()
-    if root is None:
-        return ""
-    titles = []
-    for item in root.findall("./channel/item"):
-        t = item.findtext("title")
-        if not t:
-            continue
-        t = html.unescape(t).strip()
-        t = t.replace("St. Bonaventure University", "ST BONA").replace(" University", "")
-        t = re.sub(r"\s+", " ", t).upper()
-        titles.append(t)
-        if len(titles) >= RUGBY_RESULT_COUNT:
-            break
-    print(f"rugby: parsed {len(titles)} result(s)", file=sys.stderr)
-    if not titles:
-        RUGBY_STATUS = "fetched ok but 0 items parsed"
-        return ""
-    RUGBY_STATUS = f"ok, {len(titles)} result(s)"
-    return "WOMEN'S RUGBY: " + " | ".join(titles) + " | "
-
-
 _ASCII_SWAPS = {
     "\u2018": "'", "\u2019": "'", "\u201a": "'",
     "\u201c": '"', "\u201d": '"', "\u201e": '"',
     "\u2013": "-", "\u2014": "-", "\u2212": "-",
-    "\u2026": "...", "\u00a0": " ", "\u2022": "-", "\u00b7": "-",
+    "\u2026": "...", "\u00a0": " ", "\u2022": "-",
 }
 
 
@@ -356,7 +289,6 @@ def main():
         ("jays_news", jays_news),
         ("bills_news", bills_news),
         ("bills_schedule", lambda: bills_schedule(bills_ev)),
-        ("rugby", rugby),
     )
 
     for key, fn in tasks:
@@ -367,9 +299,6 @@ def main():
         if not text and isinstance(old.get(key), str): text = old[key]
         result[key] = text
         print(f"{key}: {text}")
-
-    result["rugby_status"] = RUGBY_STATUS
-    print(f"rugby_status: {RUGBY_STATUS}")
 
     # Which game the device should poll for live scores. If ESPN gave nothing at all,
     # keep the old value; if it answered but there's no upcoming game, {} turns polling off.
