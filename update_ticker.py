@@ -26,15 +26,15 @@ GENERAL_SPORTS_FEED = "https://www.cbc.ca/webfeed/rss/rss-sports"
 LEAFS_NEWS_FEEDS    = ["https://www.cbc.ca/webfeed/rss/rss-sports-nhl", GENERAL_SPORTS_FEED, NEWS_FEED]
 RAPTORS_NEWS_FEEDS  = ["https://www.cbc.ca/webfeed/rss/rss-sports-nba", GENERAL_SPORTS_FEED, NEWS_FEED]
 JAYS_NEWS_FEEDS     = ["https://www.cbc.ca/webfeed/rss/rss-sports-mlb", GENERAL_SPORTS_FEED, NEWS_FEED]
-BILLS_NEWS_FEEDS    = [GENERAL_SPORTS_FEED]
+BILLS_NEWS_FEEDS    = ["https://www.cbc.ca/webfeed/rss/rss-sports-nfl", GENERAL_SPORTS_FEED]
 
 TSN_NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9",
           "news": "http://www.google.com/schemas/sitemap-news/0.9"}
 
 CP24_SITEMAP_BASE = "https://www.cp24.com/arc/outboundfeeds/sitemap-news"
-LEAFS_KEYWORDS     = ["leafs", "maple leafs"]
-RAPTORS_KEYWORDS   = ["raptors", "raps"]
-JAYS_KEYWORDS      = ["blue jays", "jays"]
+LEAFS_KEYWORDS     = ["Toronto Maple Leafs", "leafs", "maple leafs"]
+RAPTORS_KEYWORDS   = ["Toronto Raptors", "raptors", "raps"]
+JAYS_KEYWORDS      = ["Toronto Blue Jays", "blue jays", "jays"]
 BILLS_KEYWORDS     = ["bills", "buffalo bills"]
 
 
