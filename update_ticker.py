@@ -18,9 +18,9 @@ BROWSER_HEADERS = {
     "Accept": "application/rss+xml, application/xml, text/xml, */*",
 }
 NEWS_FEED = "https://www.cbc.ca/webfeed/rss/rss-canada-toronto"
-NEWS_TOP_HEADLINE_COUNT = 2
-TEAM_HEADLINE_COUNT = 2
-NEWS_HEADLINE_MAX_LEN = 70
+NEWS_TOP_HEADLINE_COUNT = 3
+TEAM_HEADLINE_COUNT = 3
+NEWS_HEADLINE_MAX_LEN = 80
 
 GENERAL_SPORTS_FEED = "https://www.cbc.ca/webfeed/rss/rss-sports"
 LEAFS_NEWS_FEEDS    = ["https://www.cbc.ca/webfeed/rss/rss-sports-nhl", GENERAL_SPORTS_FEED, NEWS_FEED]
