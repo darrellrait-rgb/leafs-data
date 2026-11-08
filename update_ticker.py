@@ -18,25 +18,24 @@ BROWSER_HEADERS = {
     "Accept": "application/rss+xml, application/xml, text/xml, */*",
 }
 NEWS_FEED = "https://www.cbc.ca/webfeed/rss/rss-canada-toronto"
-NEWS_TOP_HEADLINE_COUNT = 3
-TEAM_HEADLINE_COUNT = 3
-NEWS_HEADLINE_MAX_LEN = 80
+NEWS_TOP_HEADLINE_COUNT = 2      
+TEAM_HEADLINE_COUNT = 2
+NEWS_HEADLINE_MAX_LEN = 70
 
 GENERAL_SPORTS_FEED = "https://www.cbc.ca/webfeed/rss/rss-sports"
 LEAFS_NEWS_FEEDS    = ["https://www.cbc.ca/webfeed/rss/rss-sports-nhl", GENERAL_SPORTS_FEED, NEWS_FEED]
 RAPTORS_NEWS_FEEDS  = ["https://www.cbc.ca/webfeed/rss/rss-sports-nba", GENERAL_SPORTS_FEED, NEWS_FEED]
 JAYS_NEWS_FEEDS     = ["https://www.cbc.ca/webfeed/rss/rss-sports-mlb", GENERAL_SPORTS_FEED, NEWS_FEED]
-BILLS_NEWS_FEEDS    = ["https://www.cbc.ca/webfeed/rss/rss-sports-nfl", GENERAL_SPORTS_FEED]
+BILLS_NEWS_FEEDS    = [GENERAL_SPORTS_FEED]
 
 TSN_NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9",
           "news": "http://www.google.com/schemas/sitemap-news/0.9"}
 
 CP24_SITEMAP_BASE = "https://www.cp24.com/arc/outboundfeeds/sitemap-news"
-LEAFS_KEYWORDS     = ["Toronto Maple Leafs", "leafs", "maple leafs"]
-RAPTORS_KEYWORDS   = ["Toronto Raptors", "raptors", "raps"]
-JAYS_KEYWORDS      = ["Toronto Blue Jays", "blue jays", "jays"]
+LEAFS_KEYWORDS     = ["leafs", "maple leafs"]
+RAPTORS_KEYWORDS   = ["raptors", "raps"]
+JAYS_KEYWORDS      = ["blue jays", "jays"]
 BILLS_KEYWORDS     = ["bills", "buffalo bills"]
-
 
 def get_xml(url, headers=None):
     try:
@@ -46,7 +45,6 @@ def get_xml(url, headers=None):
     except Exception as e:
         print(f"FETCH FAILED: {url}\n  {e}", file=sys.stderr)
         return None
-
 
 def fetch_sitemap_articles(base_url):
     url = f"{base_url}/{datetime.now(TZ).date().isoformat()}/"
@@ -70,7 +68,6 @@ def fetch_sitemap_articles(base_url):
     articles.sort(key=lambda a: a["date"], reverse=True)
     return articles
 
-
 def tsn_headline_titles(keywords, count):
     url = f"https://www.tsn.ca/arc/outboundfeeds/sitemap-news/{datetime.now(TZ).date().isoformat()}/"
     root = get_xml(url)
@@ -88,7 +85,6 @@ def tsn_headline_titles(keywords, count):
         titles.append(t)
         if len(titles) >= count: break
     return titles, total_items
-
 
 def cbc_headline_titles(feed_urls, keywords, count, seen):
     if isinstance(feed_urls, str): feed_urls = [feed_urls]
@@ -112,7 +108,6 @@ def cbc_headline_titles(feed_urls, keywords, count, seen):
             if len(titles) >= count: break
     return titles, total_items
 
-
 def team_headlines(keywords, count, prefix):
     tsn_titles, _ = tsn_headline_titles(keywords, count)
     seen = set(tsn_titles)
@@ -124,7 +119,6 @@ def team_headlines(keywords, count, prefix):
         titles += cbc_titles
     if not titles: return ""
     return prefix + " | ".join(titles) + " | "
-
 
 def news():
     cp24_articles = fetch_sitemap_articles(CP24_SITEMAP_BASE)
@@ -140,12 +134,10 @@ def news():
     if not titles: return ""
     return "NEWS: " + " | ".join(titles) + " | "
 
-
 def leafs_news(): return team_headlines(LEAFS_KEYWORDS, TEAM_HEADLINE_COUNT, "LEAFS NEWS: ")
 def raptors_news(): return team_headlines(RAPTORS_KEYWORDS, TEAM_HEADLINE_COUNT, "RAPTORS NEWS: ")
 def jays_news(): return team_headlines(JAYS_KEYWORDS, TEAM_HEADLINE_COUNT, "JAYS NEWS: ")
 def bills_news(): return team_headlines(BILLS_KEYWORDS, TEAM_HEADLINE_COUNT, "BILLS NEWS: ")
-
 
 _ASCII_SWAPS = {
     "\u2018": "'", "\u2019": "'", "\u201a": "'",
@@ -154,14 +146,11 @@ _ASCII_SWAPS = {
     "\u2026": "...", "\u00a0": " ", "\u2022": "-",
 }
 
-
 def clean(s):
     for bad, good in _ASCII_SWAPS.items(): s = s.replace(bad, good)
     return unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
 
-
 BILLS_SCHEDULE_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/buf/schedule"
-
 
 def _espn_score(competitor):
     sc = competitor.get("score")
@@ -172,12 +161,10 @@ def _espn_score(competitor):
     except (TypeError, ValueError):
         return 0
 
-
 def _espn_json(url):
     req = urllib.request.Request(url, headers=HEADERS)
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.load(r)
-
 
 def bills_events():
     """Buffalo's regular-season and playoff events from ESPN (empty list on failure)."""
@@ -188,7 +175,6 @@ def bills_events():
         except Exception as e:
             print(f"bills schedule (seasontype={season_type}) failed: {e!r}", file=sys.stderr)
     return events
-
 
 def bills_game(events):
     """The one game the device should poll for a live score: the game in progress,
@@ -219,7 +205,6 @@ def bills_game(events):
         if best is None:
             best = game
     return best or {}
-
 
 def bills_schedule(events=None):
     """Text for the Bills ticker segment, same shape the sketch used to build
@@ -272,6 +257,29 @@ def bills_schedule(events=None):
         return ""
     return "BILLS " + last + (nxt or "NEXT: NONE | ")
 
+LEAFS_STANDINGS_URL = "https://api-web.nhle.com/v1/standings/now"
+_DIVISIONS = {"A": "ATLANTIC", "M": "METRO", "C": "CENTRAL", "P": "PACIFIC"}
+
+def _ordinal(n):
+    if 11 <= n % 100 <= 13:
+        return "TH"
+    return {1: "ST", 2: "ND", 3: "RD"}.get(n % 10, "TH")
+
+def leafs_standings():
+    """'LEAFS 3RD ATLANTIC 8-5-1 17PTS | ' - Toronto's place in its division. The NHL feed
+    covers all 32 teams, far too big for the ticker to download, so it's done here."""
+    rows = _espn_json(LEAFS_STANDINGS_URL).get("standings", [])
+    tor = next((r for r in rows if r.get("teamAbbrev", {}).get("default") == "TOR"), None)
+    if tor is None:
+        return ""
+    div = tor.get("divisionAbbrev", "")
+    key = (tor.get("points", 0), tor.get("wins", 0))
+    # Same tie-break the device used: points, then wins.
+    rank = 1 + sum(1 for r in rows
+                   if r.get("divisionAbbrev") == div and (r.get("points", 0), r.get("wins", 0)) > key)
+    return (f"LEAFS {rank}{_ordinal(rank)} {_DIVISIONS.get(div, 'DIVISION')} "
+            f"{tor.get('wins', 0)}-{tor.get('losses', 0)}-{tor.get('otLosses', 0)} "
+            f"{tor.get('points', 0)}PTS | ")
 
 def main():
     old = {}
@@ -288,6 +296,7 @@ def main():
         ("raptors_news", raptors_news),
         ("jays_news", jays_news),
         ("bills_news", bills_news),
+        ("leafs_standings", leafs_standings),
         ("bills_schedule", lambda: bills_schedule(bills_ev)),
     )
 
@@ -311,7 +320,6 @@ def main():
     with open(OUT_FILE, "w") as f:
         json.dump(result, f, indent=2)
         f.write("\n")
-
 
 if __name__ == "__main__":
     main()
