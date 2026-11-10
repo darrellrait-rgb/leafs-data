@@ -1,16 +1,16 @@
 {
-  "news": "NEWS: 'Betrayed our members' Unifor President reacts to Stellantis sale of... | Culture minister insists Canada will eventually force streaming giant... | ",
+  "news": "NEWS: Why thousands of Canadian students are leaving poppies on veterans' g... | 'Betrayed our members' Unifor President reacts to Stellantis sale of... | ",
   "leafs_news": "LEAFS NEWS: Matthews urges Leafs to 'look in the mirror' in bid to snap slump | Report: Maple Leafs top prospect Danford has broken wrist | ",
-  "raptors_news": "RAPTORS NEWS: Raptors' Barnes, Quickley to miss second straight game, Murray-Boyles... | NBA core danger tiers: Raptors soon to face key roster decision | ",
-  "jays_news": "JAYS NEWS: Hitters the Blue Jays could target in free agency | Blue Jays response to Santander's Islamophobic reposts 'not enough' f... | ",
-  "bills_news": "BILLS NEWS: Bills place Canadian WR Palmer on injured reserve with hamstring inju... | Inside Jefferson's miraculous catch for Vikings versus Bills in 2022 | ",
+  "raptors_news": "RAPTORS NEWS: Jerome's 27-point night powers Grizzlies past undermanned Raptors | Short-handed Raptors run out of gas in fourth quarter, fall to Grizzl... | ",
+  "jays_news": "JAYS NEWS: Blue Jays response to Santander's Islamophobic reposts 'not enough' f... | ",
+  "bills_news": "BILLS NEWS: Allen and Bills move to 7-1 with a win over the sputtering Vikings | Bills defence swarms Wentz, Vikings to improve to 7-1 with win on MNF | ",
   "leafs_standings": "LEAFS 7TH ATLANTIC 8-9-2 18PTS | ",
-  "bills_schedule": "BILLS LAST: BAL 10 @ BUF 36 | LIVE: BUF 0 @ MIN 0 (15:00 - 2nd) | ",
+  "bills_schedule": "BILLS LAST: BUF 23 @ MIN 6 | NEXT: BUF @ NYJ 11/15 1:00PM | ",
   "bills_game": {
-    "id": "401873051",
-    "start": 1794273300,
-    "home": "MIN",
-    "homeId": "16",
+    "id": "401873054",
+    "start": 1794765600,
+    "home": "NYJ",
+    "homeId": "20",
     "away": "BUF",
     "awayId": "2"
   }
