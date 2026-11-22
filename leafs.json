@@ -1,17 +1,17 @@
 {
-  "news": "NEWS: Peel police investigating serious pedestrian collision in Mississauga | Police: 3 killed and 1 wounded in shooting at Ohio baby shower; 1 man... | ",
+  "news": "NEWS: He was put in jail for violating a no-contact order. That didn't stop... | Delta Air Lines says system issue that delayed flights nationwide has... | ",
   "leafs_news": "LEAFS NEWS: Ice Chips: Maple Leafs recall F Raty from AHL | 'Getting tired of this one': Hiller, Leafs lament another blown lead... | ",
   "raptors_news": "RAPTORS NEWS: Raptors' rookie Graves shines in first career start | Barnes scores 29, including key layup, as Raptors end skid with win o... | ",
   "jays_news": "JAYS NEWS: Davis Schneider becomes free agent after 4 seasons with Blue Jays | ",
-  "bills_news": "BILLS NEWS: Bills rule out starting cornerback Benford, LB Williams for game agai... | Bills to retire Hall of Fame wide receiver Andre Reed's No. 83 next s... | ",
+  "bills_news": "BILLS NEWS: Bills' defence feasts in win over injury-depleted Dolphins | Brady not satisfied with 9-1 Bills, says team wasn't looking ahead to... | ",
   "leafs_standings": "LEAFS 7TH ATLANTIC 8-14-3 19PTS | ",
-  "bills_schedule": "BILLS LAST: BUF 31 @ NYJ 12 | LIVE: MIA 0 @ BUF 0 (14:10 - 2nd) | ",
+  "bills_schedule": "BILLS LAST: MIA 9 @ BUF 26 | NEXT: KC @ BUF 11/26 8:20PM | ",
   "bills_game": {
-    "id": "401873070",
-    "start": 1795370400,
+    "id": "401873082",
+    "start": 1795742400,
     "home": "BUF",
     "homeId": "2",
-    "away": "MIA",
-    "awayId": "15"
+    "away": "KC",
+    "awayId": "12"
   }
 }
