@@ -1,17 +1,17 @@
 {
-  "news": "NEWS: A perfect storm: King tides, heavy rain bring massive floods to B.C.... | Grand Theft Auto VI drives streaming spike for this Canadian pop star... | ",
-  "leafs_news": "LEAFS NEWS: Ice Chips: Marchenko rejoins Leafs top PP unit, Nylander drops to PP2 | Duthie on the Leafs' uphill climb back into contention, the state of... | ",
+  "news": "NEWS: Suspects used stolen SUV to break into Whitby game store: police | Scarborough collision leaves man in his 70s with life-altering injuri... | ",
+  "leafs_news": "LEAFS NEWS: 'I didn't agree with it': Nylander demoted to Leafs second power play... | Anthem singer apologizes for botched O Canada lyrics at Leafs game ag... | ",
   "raptors_news": "RAPTORS NEWS: Raptors thankful for rare three-day break and a chance to reset after... | Rajakovic needs to hold Raptors to higher standard | ",
   "jays_news": "JAYS NEWS: Report: Blue Jays had interest in Robert Jr. ahead of O's return | A closer look at new Blue Jays pitcher Taira | ",
-  "bills_news": "BILLS NEWS: WATCH LIVE: Chiefs vs. Bills | Rackley on the Bills' key matchup against the Chiefs, the impact weat... | ",
+  "bills_news": "BILLS NEWS: Bass hits 57-yard FG as time expires to lift Bills to rainy win over... | Bass hits FG as time expires to give Bills Thanksgiving win over Chie... | ",
   "leafs_standings": "LEAFS 7TH ATLANTIC 9-14-3 21PTS | ",
-  "bills_schedule": "BILLS LAST: MIA 9 @ BUF 26 | NEXT: KC @ BUF 11/26 8:20PM | ",
+  "bills_schedule": "BILLS LAST: KC 10 @ BUF 13 | NEXT: BUF @ NE 12/06 4:25PM | ",
   "bills_game": {
-    "id": "401873082",
-    "start": 1795742400,
-    "home": "BUF",
-    "homeId": "2",
-    "away": "KC",
-    "awayId": "12"
+    "id": "401873105",
+    "start": 1796592300,
+    "home": "NE",
+    "homeId": "17",
+    "away": "BUF",
+    "awayId": "2"
   }
 }
